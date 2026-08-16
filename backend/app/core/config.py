@@ -74,9 +74,15 @@ class Settings(BaseSettings):
     ENABLE_DEMO_SIMULATION_MODE: bool = True
     DEFAULT_SIMULATION_SCENARIO: str = "assam_brahmaputra_flood_2026"
 
-    # AI/ML Configuration
+    # AI/ML & LLM Provider Configuration
+    AI_PROVIDER: str = "mock"  # Options: "mock", "gemini", "openai", "anthropic"
+    AI_API_KEY: str = ""
+    AI_MODEL_NAME: str = "gemini-1.5-flash"
+    AI_TEMPERATURE: float = 0.2
+    AI_REQUEST_TIMEOUT_SECONDS: float = 10.0
+    ENABLE_AI_RECOMMENDATION_ENGINE: bool = True
     ML_MODEL_REGISTRY_PATH: str = "ai_ml/models/"
-    USE_MOCK_ML_INFERENCE: bool = False
+    USE_MOCK_ML_INFERENCE: bool = True
     ML_INFERENCE_DEVICE: str = "cpu"
 
 

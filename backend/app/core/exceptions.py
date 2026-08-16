@@ -119,3 +119,35 @@ class ForbiddenException(JeevanGridException):
             error_code="FORBIDDEN",
             details=details,
         )
+
+
+class AIProviderException(JeevanGridException):
+    """Raised when an AI/LLM provider service encounters a network, rate limit, or inference error."""
+
+    def __init__(
+        self,
+        message: str = "AI intelligence service is temporarily unavailable.",
+        details: Optional[Dict[str, Any]] = None,
+    ):
+        super().__init__(
+            message=message,
+            status_code=502,
+            error_code="AI_PROVIDER_ERROR",
+            details=details,
+        )
+
+
+class AIValidationException(JeevanGridException):
+    """Raised when AI input data or generated output fails schema validation."""
+
+    def __init__(
+        self,
+        message: str = "Invalid input or output structure for AI reasoning pipeline.",
+        details: Optional[Dict[str, Any]] = None,
+    ):
+        super().__init__(
+            message=message,
+            status_code=422,
+            error_code="AI_VALIDATION_ERROR",
+            details=details,
+        )

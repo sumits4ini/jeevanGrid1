@@ -12,17 +12,28 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { MetricsGrid } from "@/components/dashboard/MetricsGrid";
 import { MapPlaceholder } from "@/components/dashboard/MapPlaceholder";
+import { AIIntelligenceCard } from "@/components/dashboard/AIIntelligenceCard";
 import { DisasterOverviewCard } from "@/components/dashboard/DisasterOverviewCard";
 import { RiskZonesCard } from "@/components/dashboard/RiskZonesCard";
 import { ResourcesCard } from "@/components/dashboard/ResourcesCard";
 import { HealthStatusCard } from "@/components/dashboard/HealthStatusCard";
 import { RecentActivityCard } from "@/components/dashboard/RecentActivityCard";
 import { fetchDashboardData } from "@/services/dashboardService";
+import {
+  fetchAIRecommendations,
+  fetchAIResourcePriorities,
+  fetchAIRiskAnalysis,
+} from "@/services/aiService";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const data = await fetchDashboardData();
+  const [data, aiRisk, aiResources, aiRecommendations] = await Promise.all([
+    fetchDashboardData(),
+    fetchAIRiskAnalysis(),
+    fetchAIResourcePriorities(),
+    fetchAIRecommendations(),
+  ]);
 
   return (
     <div className="space-y-6 pb-12">
@@ -71,10 +82,17 @@ export default async function DashboardPage() {
 
       {/* Main Tactical Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Primary Column: GIS Map, Disasters, and Live Feed (8 Cols) */}
+        {/* Left Primary Column: GIS Map, AI Decision Intelligence, and Active Events (8 Cols) */}
         <div className="lg:col-span-8 space-y-6">
-          {/* GIS Map Viewport Placeholder */}
+          {/* GIS Map Viewport */}
           <MapPlaceholder />
+
+          {/* AI Intelligence & Decision Support Matrix Widget */}
+          <AIIntelligenceCard
+            initialRisk={aiRisk}
+            initialResources={aiResources}
+            initialRecommendations={aiRecommendations}
+          />
 
           {/* Active Disasters Overview */}
           <DisasterOverviewCard disasters={data.disasters} />
