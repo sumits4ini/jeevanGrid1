@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CriticalInfrastructureGeoJSON",
+  "description": "GeoJSON Feature representing critical infrastructure assets (hospitals, power, shelters)",
+  "type": "object",
+  "required": ["type", "geometry", "properties"],
+  "properties": {
+    "type": { "type": "string", "enum": ["Feature"] },
+    "geometry": {
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": { "type": "string", "enum": ["Point"] },
+        "coordinates": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 3,
+          "items": { "type": "number" }
+        }
+      }
+    },
+    "properties": {
+      "type": "object",
+      "required": ["id", "name", "facility_type", "operational_status", "max_capacity"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "name": { "type": "string" },
+        "facility_type": {
+          "type": "string",
+          "enum": ["HOSPITAL", "POWER_SUBSTATION", "WATER_TREATMENT", "BRIDGE", "COMM_TOWER", "SHELTER"]
+        },
+        "operational_status": {
+          "type": "string",
+          "enum": ["OPERATIONAL", "DEGRADED", "FAILED", "CUT_OFF"]
+        },
+        "max_capacity": { "type": "integer", "minimum": 0 },
+        "current_occupancy": { "type": "integer", "minimum": 0 },
+        "backup_power_hours": { "type": "number", "minimum": 0.0 },
+        "contact_phone": { "type": "string" }
+      }
+    }
+  }
+}

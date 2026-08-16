@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HazardZoneGeoJSON",
+  "description": "GeoJSON Feature representing an active or simulated disaster hazard/inundation polygon",
+  "type": "object",
+  "required": ["type", "geometry", "properties"],
+  "properties": {
+    "type": { "type": "string", "enum": ["Feature"] },
+    "geometry": {
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": { "type": "string", "enum": ["Polygon", "MultiPolygon"] },
+        "coordinates": { "type": "array" }
+      }
+    },
+    "properties": {
+      "type": "object",
+      "required": ["id", "disaster_id", "hazard_type", "severity_level", "inundation_depth_m", "is_active"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "disaster_id": { "type": "string", "format": "uuid" },
+        "hazard_type": { "type": "string", "enum": ["FLOOD", "CYCLONE", "LANDSLIDE", "EARTHQUAKE", "FIRE"] },
+        "severity_level": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "inundation_depth_m": { "type": "number", "minimum": 0.0 },
+        "hazard_intensity": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "is_active": { "type": "boolean" },
+        "recorded_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

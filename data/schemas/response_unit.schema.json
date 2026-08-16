@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ResponseUnitGeoJSON",
+  "description": "GeoJSON Feature representing emergency response assets and battalions",
+  "type": "object",
+  "required": ["type", "geometry", "properties"],
+  "properties": {
+    "type": { "type": "string", "enum": ["Feature"] },
+    "geometry": {
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": { "type": "string", "enum": ["Point"] },
+        "coordinates": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 3,
+          "items": { "type": "number" }
+        }
+      }
+    },
+    "properties": {
+      "type": "object",
+      "required": ["id", "unit_code", "unit_type", "status", "capacity_payload"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "unit_code": { "type": "string" },
+        "unit_type": {
+          "type": "string",
+          "enum": ["NDRF_TEAM", "SDRF_TEAM", "AMBULANCE", "RESCUE_BOAT", "FOOD_WATER_TRUCK", "MOBILE_GENERATOR"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["AVAILABLE", "DISPATCHED", "ON_MISSION", "MAINTENANCE"]
+        },
+        "assigned_incident_id": { "type": ["string", "null"], "format": "uuid" },
+        "capacity_payload": { "type": "object" }
+      }
+    }
+  }
+}

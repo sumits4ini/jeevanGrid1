@@ -1,0 +1,96 @@
+# JeevanGrid - .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual Environments
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Node & Frontend
+node_modules/
+.next/
+out/
+dist/
+build/
+.npm
+.yarn/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment & Secrets (NEVER COMMIT SENSITIVE KEYS)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+*.cert
+
+# GIS & Datasets (Avoid committing massive binary geospatial assets)
+data/raw/*.tif
+data/raw/*.tiff
+data/raw/*.shp
+data/raw/*.dbf
+data/raw/*.shx
+data/raw/*.nc
+data/raw/*.gdb
+data/raw/*.geotiff
+*.geopackage
+*.gpkg
+
+# AI / ML Checkpoints & Models
+ai_ml/models/*.pkl
+ai_ml/models/*.joblib
+ai_ml/models/*.onnx
+ai_ml/models/*.pt
+ai_ml/models/*.pth
+ai_ml/models/*.bin
+!ai_ml/models/.gitkeep
+
+# IDEs & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Docker & Logs
+*.log
+logs/
+docker/data/
+docker/pgdata/
+docker/redisdata/
