@@ -15,12 +15,13 @@ def test_root_health_endpoint(client: TestClient):
     assert "data" in body
 
     data = body["data"]
-    assert data["status"] == "healthy"
+    assert data["status"] in ["healthy", "degraded"]
     assert "app_name" in data
     assert "app_version" in data
     assert "services" in data
     assert "api_gateway" in data["services"]
     assert data["services"]["api_gateway"]["status"] == "healthy"
+    assert "database" in data["services"]
 
 
 def test_v1_health_endpoint(client: TestClient):
@@ -30,7 +31,8 @@ def test_v1_health_endpoint(client: TestClient):
 
     body = response.json()
     assert body["success"] is True
-    assert body["data"]["status"] == "healthy"
+    assert body["data"]["status"] in ["healthy", "degraded"]
+    assert body["data"]["services"]["api_gateway"]["status"] == "healthy"
 
 
 def test_root_landing_endpoint(client: TestClient):

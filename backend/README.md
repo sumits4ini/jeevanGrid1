@@ -9,14 +9,19 @@ The JeevanGrid Backend is an asynchronous, high-performance API service built wi
 
 ```text
 backend/
-├── alembic/                  # Database migration scripts (Phase 3)
+├── alembic.ini                # Local alembic configuration
+├── alembic/                  # Database migration scripts
+│   ├── env.py                # Alembic environment with PostGIS & SQLAlchemy 2.0
+│   ├── script.py.mako        # Migration template
+│   └── versions/
+│       └── 0001_initial_postgis_schema.py # Initial PostGIS tables & spatial indexes
 ├── app/
 │   ├── api/
 │   │   └── v1/
 │   │       ├── endpoints/
 │   │       │   ├── disasters.py   # Disaster incident CRUD & summaries
 │   │       │   ├── gis.py         # GeoJSON vector layers & spatial queries
-│   │       │   ├── health.py      # /health & /api/v1/health endpoints
+│   │       │   ├── health.py      # /health & /api/v1/health endpoints with DB status
 │   │       │   ├── locations.py   # Critical infrastructure & shelters
 │   │       │   ├── resources.py   # Emergency response units & dispatch
 │   │       │   └── risk.py        # MCDA risk index & evaluation
@@ -26,8 +31,15 @@ backend/
 │   │   ├── exceptions.py          # Custom domain exception hierarchy
 │   │   ├── handlers.py            # Global exception handlers & JSON formatters
 │   │   └── logging.py             # Structured logger configuration
-│   ├── db/                        # Database session & Base (Phase 3)
-│   ├── models/                    # SQLAlchemy / GeoAlchemy ORM models (Phase 3)
+│   ├── db/                        # Database session & Base
+│   │   ├── base.py                # Declarative Base & TimestampMixin
+│   │   └── session.py             # Async/sync engine, sessionmaker & DB health checker
+│   ├── models/                    # SQLAlchemy / GeoAlchemy ORM models
+│   │   ├── __init__.py            # Model registry export
+│   │   ├── disaster.py            # Disaster entity with PostGIS Point geometry
+│   │   ├── location.py            # CriticalInfrastructure entity with PostGIS Point
+│   │   ├── resource.py            # ResponseUnit entity with Point & JSONB payload
+│   │   └── risk_zone.py           # HazardZone entity with PostGIS MultiPolygon
 │   ├── schemas/                   # Pydantic request/response validation schemas
 │   │   ├── common.py              # ApiResponse, HealthResponse, ErrorResponse
 │   │   ├── disaster.py            # Disaster schemas
@@ -45,17 +57,72 @@ backend/
 ├── requirements.txt               # Lean Python dependencies
 └── tests/                         # Pytest test suite
     ├── conftest.py                # Test fixtures & TestClient
-    ├── integration/               # API integration tests
+    ├── integration/               # API & DB integration tests
+    │   ├── test_db_connectivity.py
+    │   ├── test_health_api.py
+    │   └── test_routers_v1.py
     └── unit/                      # Configuration & unit tests
+        ├── test_alembic_setup.py
+        ├── test_config.py
+        ├── test_db_config.py
+        ├── test_exceptions.py
+        └── test_models.py
 ```
 
 ---
 
-## 3. How to Run Locally
+## 3. Database & PostGIS Setup
+
+JeevanGrid requires **PostgreSQL 16+** with the **PostGIS 3.4+** spatial extension.
+
+### Option A: Local Docker (Recommended)
+Start PostgreSQL + PostGIS container:
+```bash
+docker run -d --name jeevangrid_postgres \
+  -e POSTGRES_DB=jeevangrid_db \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -p 5432:5432 \
+  postgis/postgis:16-3.4
+```
+
+### Option B: Local PostgreSQL Installation
+1. Create the database:
+```sql
+CREATE DATABASE jeevangrid_db;
+```
+2. Enable PostGIS:
+```sql
+\c jeevangrid_db
+CREATE EXTENSION IF NOT EXISTS postgis;
+```
+
+---
+
+## 4. Running Alembic Database Migrations
+
+Run database migrations to apply the initial schema with PostGIS extension, spatial tables, and GIST indexes:
+
+```bash
+# From repository root:
+alembic upgrade head
+
+# Or from within backend/ directory:
+cd backend
+alembic upgrade head
+```
+
+To rollback a migration:
+```bash
+alembic downgrade -1
+```
+
+---
+
+## 5. How to Run Locally
 
 ### Step 1: Install Dependencies
 ```bash
-cd c:\Users\sumit\JeevanGrid1
 pip install -r backend/requirements.txt
 ```
 
@@ -74,69 +141,17 @@ The server will start at `http://127.0.0.1:8000`.
 
 ---
 
-## 4. Interactive API Documentation & Health Checks
+## 6. Interactive API Documentation & Health Checks
 
 - **Interactive Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 - **ReDoc Interactive Docs**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
 - **Root Health Check**: `GET http://127.0.0.1:8000/health`
 - **v1 Health Check**: `GET http://127.0.0.1:8000/api/v1/health`
-- **OpenAPI JSON**: [http://127.0.0.1:8000/openapi.json](http://127.0.0.1:8000/openapi.json)
-
----
-
-## 5. API V1 Route Summary
-
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/health` | Root system health & subsystem readiness check |
-| `GET` | `/api/v1/health` | API v1 health & readiness check |
-| `GET` | `/api/v1/disasters` | List disaster events with status/type filtering |
-| `GET` | `/api/v1/disasters/summary/overview` | Aggregated COP disaster metrics |
-| `POST` | `/api/v1/disasters` | Register new disaster event |
-| `GET` | `/api/v1/disasters/{id}` | Get disaster details by ID (404 handled) |
-| `GET` | `/api/v1/locations/infrastructure` | List critical infrastructure facilities |
-| `POST` | `/api/v1/locations/infrastructure` | Register new infrastructure asset |
-| `GET` | `/api/v1/resources/units` | List active emergency response units |
-| `POST` | `/api/v1/resources/units` | Register new response vehicle/team |
-| `POST` | `/api/v1/resources/dispatch-plan` | Compute optimal dispatch plan |
-| `GET` | `/api/v1/risk/categories` | List UNDRR operational risk tiers |
-| `POST` | `/api/v1/risk/evaluate` | Trigger MCDA regional risk evaluation |
-| `GET` | `/api/v1/gis/hazard-zones` | Retrieve GeoJSON hazard polygons |
-| `POST` | `/api/v1/gis/query-bbox` | Query spatial layers by bounding box |
-| `POST` | `/api/v1/gis/buffer-check` | Check infrastructure proximity within buffer |
-
----
-
-## 6. Standard API Envelopes & Error Format
-
-### Successful Response:
-```json
-{
-  "success": true,
-  "message": "Disaster events retrieved successfully.",
-  "data": [],
-  "timestamp": "2026-08-16T21:15:00.000000Z"
-}
-```
-
-### Error Response (e.g. 404 Entity Not Found):
-```json
-{
-  "success": false,
-  "error_code": "ENTITY_NOT_FOUND",
-  "message": "Disaster with ID '00000000-0000-0000-0000-000000000000' was not found.",
-  "details": {
-    "entity_name": "Disaster",
-    "entity_id": "00000000-0000-0000-0000-000000000000"
-  },
-  "timestamp": "2026-08-16T21:15:00.000000Z"
-}
-```
 
 ---
 
 ## 7. Running Tests
 Run the complete unit and integration test suite with `pytest`:
 ```bash
-pytest -v
+python -m pytest backend/tests -v
 ```
