@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   Activity,
   Anchor,
+  CheckCircle2,
   Compass,
   Filter,
   Hospital,
@@ -15,94 +16,32 @@ import {
   Shield,
   Truck,
   Users,
+  X,
   Zap,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-
-interface ResourceUnitItem {
-  id: string;
-  unit_code: string;
-  name: string;
-  unit_type: "RESCUE_BOAT" | "AMBULANCE" | "NDRF_TEAM" | "HOSPITAL" | "POWER_STATION" | "SHELTER";
-  status: "AVAILABLE" | "ASSIGNED" | "STANDBY" | "OFFLINE";
-  capacity: string;
-  latitude: number;
-  longitude: number;
-  assigned_incident?: string;
-  current_task?: string;
-}
-
-const SAMPLE_RESOURCES: ResourceUnitItem[] = [
-  {
-    id: "ru-boat-01",
-    unit_code: "BOAT-NDRF-01",
-    name: "NDRF Rescue Craft Alpha-1",
-    unit_type: "RESCUE_BOAT",
-    status: "AVAILABLE",
-    capacity: "12 Persons / Shallow Draft",
-    latitude: 26.3200,
-    longitude: 91.0080,
-    assigned_incident: "Assam Flood Sector East",
-    current_task: "Pre-positioned at NH-31 dry slipway junction.",
-  },
-  {
-    id: "ru-boat-02",
-    unit_code: "BOAT-NDRF-02",
-    name: "NDRF Rescue Craft Alpha-2",
-    unit_type: "RESCUE_BOAT",
-    status: "AVAILABLE",
-    capacity: "12 Persons / Shallow Draft",
-    latitude: 26.3150,
-    longitude: 91.0120,
-    assigned_incident: "Assam Flood Sector East",
-    current_task: "Standby for Ward 4 triage extraction.",
-  },
-  {
-    id: "ru-amb-01",
-    unit_code: "AMB-108-A",
-    name: "ALS Ambulance Unit 108-A",
-    unit_type: "AMBULANCE",
-    status: "AVAILABLE",
-    capacity: "2 Stretcher / Critical Life Support",
-    latitude: 26.3200,
-    longitude: 91.0200,
-    assigned_incident: "Assam Flood Sector East",
-    current_task: "Standby at high-elevation Western Bypass node.",
-  },
-  {
-    id: "ru-ndrf-01",
-    unit_code: "NDRF-BAT-01",
-    name: "1st Battalion NDRF Rescue Team",
-    unit_type: "NDRF_TEAM",
-    status: "ASSIGNED",
-    capacity: "45 Tactical Specialists",
-    latitude: 26.3216,
-    longitude: 91.0063,
-    assigned_incident: "Assam Flood Sector East",
-    current_task: "Conducting house-to-house boat extractions.",
-  },
-  {
-    id: "loc-hosp-01",
-    unit_code: "HOSP-BARPETA",
-    name: "Barpeta District Civil Hospital",
-    unit_type: "HOSPITAL",
-    status: "STANDBY",
-    capacity: "350 Beds / Trauma Unit",
-    latitude: 26.3260,
-    longitude: 91.0110,
-    assigned_incident: "Assam Flood Sector East",
-    current_task: "Emergency ward operating on generator power.",
-  },
-];
+import { useEOC, ResourceUnit } from "@/context/EOCContext";
 
 export default function ResourcesPage() {
+  const {
+    resources,
+    disasters,
+    assignResourceToIncident,
+    releaseResource,
+  } = useEOC();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("ALL");
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
 
-  const filtered = SAMPLE_RESOURCES.filter((r) => {
+  // Assignment Modal State
+  const [assigningUnit, setAssigningUnit] = useState<ResourceUnit | null>(null);
+  const [selectedIncidentId, setSelectedIncidentId] = useState<string>("");
+  const [notice, setNotice] = useState<string | null>(null);
+
+  const filtered = resources.filter((r) => {
     if (filterType !== "ALL" && r.unit_type !== filterType) return false;
     if (filterStatus !== "ALL" && r.status !== filterStatus) return false;
     if (
@@ -141,6 +80,22 @@ export default function ResourcesPage() {
     }
   };
 
+  const handleConfirmAssignment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!assigningUnit || !selectedIncidentId) return;
+    assignResourceToIncident(assigningUnit.id, selectedIncidentId);
+    setNotice(`Unit ${assigningUnit.unit_code} successfully assigned.`);
+    setAssigningUnit(null);
+    setSelectedIncidentId("");
+    setTimeout(() => setNotice(null), 3000);
+  };
+
+  const handleRelease = (unit: ResourceUnit) => {
+    releaseResource(unit.id);
+    setNotice(`Unit ${unit.unit_code} returned to standby readiness.`);
+    setTimeout(() => setNotice(null), 3000);
+  };
+
   return (
     <div className="space-y-6 pb-12">
       {/* Top Header */}
@@ -164,38 +119,51 @@ export default function ResourcesPage() {
         </Link>
       </div>
 
+      {/* Notification Toast */}
+      {notice && (
+        <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-300 text-xs font-mono flex items-center justify-between animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <span>{notice}</span>
+          </div>
+          <button onClick={() => setNotice(null)}>
+            <X className="w-3.5 h-3.5 text-slate-400" />
+          </button>
+        </div>
+      )}
+
       {/* KPI Overview Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="p-4 rounded-xl bg-surface-100 border border-surface-border">
           <span className="text-[10px] uppercase font-mono text-slate-400">Total Response Fleet</span>
           <div className="text-2xl font-bold font-mono text-slate-100 mt-1">
-            32 Units
+            {resources.length} Units
           </div>
-          <span className="text-[10px] text-slate-500 font-mono">Assam Basin Depot</span>
+          <span className="text-[10px] text-slate-500 font-mono">Assam Basin Sector</span>
         </div>
 
         <div className="p-4 rounded-xl bg-surface-100 border border-surface-border">
           <span className="text-[10px] uppercase font-mono text-slate-400">Available For Dispatch</span>
           <div className="text-2xl font-bold font-mono text-emerald-400 mt-1">
-            18 Available
+            {resources.filter((r) => r.status === "AVAILABLE").length} Available
           </div>
-          <span className="text-[10px] text-emerald-400 font-mono">56.3% Readiness</span>
+          <span className="text-[10px] text-emerald-400 font-mono">Immediate Readiness</span>
         </div>
 
         <div className="p-4 rounded-xl bg-surface-100 border border-surface-border">
           <span className="text-[10px] uppercase font-mono text-slate-400">Committed on Missions</span>
           <div className="text-2xl font-bold font-mono text-amber-400 mt-1">
-            14 Assigned
+            {resources.filter((r) => r.status === "ASSIGNED").length} Assigned
           </div>
-          <span className="text-[10px] text-amber-400 font-mono">Ward 4 Residential Zone</span>
+          <span className="text-[10px] text-amber-400 font-mono">Active Deployment</span>
         </div>
 
         <div className="p-4 rounded-xl bg-surface-100 border border-surface-border">
-          <span className="text-[10px] uppercase font-mono text-slate-400">Mutual Aid Requisitioned</span>
-          <div className="text-2xl font-bold font-mono text-rose-400 mt-1">
-            1 Deficit
+          <span className="text-[10px] uppercase font-mono text-slate-400">Standby / Medical</span>
+          <div className="text-2xl font-bold font-mono text-cyan-400 mt-1">
+            {resources.filter((r) => r.status === "STANDBY").length} Units
           </div>
-          <span className="text-[10px] text-rose-400 font-mono">Water Supply Tankers</span>
+          <span className="text-[10px] text-cyan-400 font-mono">Civil Hospital / Trauma</span>
         </div>
       </div>
 
@@ -243,7 +211,7 @@ export default function ResourcesPage() {
         </div>
       </div>
 
-      {/* Resource Fleet Table & Cards */}
+      {/* Resource Fleet Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((unit) => (
           <Card key={unit.id} className="border-surface-border bg-surface-100 hover:border-slate-700 transition-colors p-4 space-y-3 shadow-lg">
@@ -265,26 +233,91 @@ export default function ResourcesPage() {
                 <span className="text-slate-500">Capacity: </span>
                 {unit.capacity}
               </div>
-              <div className="text-[11px] text-cyan-300 font-mono">
+              <div className="text-[11px] text-cyan-300 font-mono truncate">
                 <span className="text-slate-500">Mission: </span>
                 {unit.current_task}
               </div>
+              {unit.assigned_incident_name && (
+                <div className="text-[10px] text-amber-400 font-mono truncate">
+                  <span className="text-slate-500">Incident: </span>
+                  {unit.assigned_incident_name}
+                </div>
+              )}
             </div>
 
-            <div className="pt-2 border-t border-surface-border/60 flex items-center justify-between text-xs font-mono">
-              <span className="text-slate-400 text-[10px]">
-                {unit.latitude}° N, {unit.longitude}° E
-              </span>
-
-              <Link href={`/gis?lat=${unit.latitude}&lng=${unit.longitude}`}>
+            <div className="pt-2 border-t border-surface-border/60 flex items-center justify-between text-xs font-mono gap-2">
+              <Link href={`/gis?resource=${unit.id}&lat=${unit.latitude}&lng=${unit.longitude}`}>
                 <Button size="sm" variant="secondary" icon={<MapPin className="w-3 h-3 text-cyan-400" />}>
-                  Locate on Map
+                  Locate
                 </Button>
               </Link>
+
+              {unit.status === "AVAILABLE" && (
+                <Button
+                  size="sm"
+                  variant="primary"
+                  onClick={() => {
+                    setAssigningUnit(unit);
+                    setSelectedIncidentId(disasters[0]?.id || "");
+                  }}
+                >
+                  Assign Unit
+                </Button>
+              )}
+
+              {unit.status === "ASSIGNED" && (
+                <Button size="sm" variant="secondary" onClick={() => handleRelease(unit)}>
+                  Mark Available
+                </Button>
+              )}
             </div>
           </Card>
         ))}
       </div>
+
+      {/* Modal: Assign Unit to Incident */}
+      {assigningUnit && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-md rounded-2xl bg-surface-100 border border-surface-border shadow-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-surface-border">
+              <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
+                <Truck className="w-4 h-4 text-cyan-400" />
+                Assign {assigningUnit.name}
+              </h3>
+              <button onClick={() => setAssigningUnit(null)} className="text-slate-400 hover:text-slate-200">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleConfirmAssignment} className="space-y-3 text-xs font-mono">
+              <div>
+                <label className="block text-slate-400 mb-1">Target Incident / Zone:</label>
+                <select
+                  value={selectedIncidentId}
+                  onChange={(e) => setSelectedIncidentId(e.target.value)}
+                  className="w-full p-2.5 rounded-lg bg-surface-200 border border-surface-border text-slate-200 focus:outline-none focus:border-cyan-500"
+                  required
+                >
+                  {disasters.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name} [Level {d.severity_level} {d.type}]
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <Button size="sm" variant="secondary" onClick={() => setAssigningUnit(null)}>
+                  Cancel
+                </Button>
+                <Button size="sm" variant="primary">
+                  Confirm Dispatch
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

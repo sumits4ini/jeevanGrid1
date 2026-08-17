@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import maplibregl, { Map as MapLibreMap, StyleSpecification } from "maplibre-gl";
 import {
   Activity,
@@ -31,11 +32,13 @@ const INUNDATION_GEOJSON: GeoJSON.FeatureCollection = {
     {
       type: "Feature",
       properties: {
-        id: "zone-inundation-01",
+        id: "dis-assam-01",
         name: "Barpeta East Inundation Perimeter",
         depth_m: 1.25,
         risk_level: "CRITICAL",
         population_exposed: 85400,
+        category: "INCIDENT",
+        details: "Assam Brahmaputra Basin 2026 flash flood inundation breach.",
       },
       geometry: {
         type: "Polygon",
@@ -54,11 +57,13 @@ const INUNDATION_GEOJSON: GeoJSON.FeatureCollection = {
     {
       type: "Feature",
       properties: {
-        id: "zone-inundation-02",
+        id: "dis-chennai-02",
         name: "Brahmaputra Lowland Breach",
         depth_m: 0.85,
         risk_level: "HIGH",
         population_exposed: 32000,
+        category: "INCIDENT",
+        details: "Secondary breach over low-lying agricultural plains.",
       },
       geometry: {
         type: "Polygon",
@@ -81,7 +86,15 @@ const H3_RISK_HEXGRID_GEOJSON: GeoJSON.FeatureCollection = {
   features: [
     {
       type: "Feature",
-      properties: { hex_id: "8860145b23fffff", risk_score: 0.94, tier: "CRITICAL", fill_color: "#ef4444" },
+      properties: {
+        hex_id: "8860145b23fffff",
+        location_name: "Barpeta Ward 4 Residential Core",
+        risk_score: 0.94,
+        tier: "CRITICAL",
+        population: 48500,
+        fill_color: "#ef4444",
+        category: "RISK_HEX",
+      },
       geometry: {
         type: "Polygon",
         coordinates: [
@@ -99,7 +112,15 @@ const H3_RISK_HEXGRID_GEOJSON: GeoJSON.FeatureCollection = {
     },
     {
       type: "Feature",
-      properties: { hex_id: "8860145b27fffff", risk_score: 0.78, tier: "HIGH", fill_color: "#f97316" },
+      properties: {
+        hex_id: "8860145b27fffff",
+        location_name: "Barpeta East Bridge Approach",
+        risk_score: 0.78,
+        tier: "HIGH",
+        population: 36900,
+        fill_color: "#f97316",
+        category: "RISK_HEX",
+      },
       geometry: {
         type: "Polygon",
         coordinates: [
@@ -117,7 +138,15 @@ const H3_RISK_HEXGRID_GEOJSON: GeoJSON.FeatureCollection = {
     },
     {
       type: "Feature",
-      properties: { hex_id: "8860145b2bfffff", risk_score: 0.45, tier: "MEDIUM", fill_color: "#eab308" },
+      properties: {
+        hex_id: "8860145b2bfffff",
+        location_name: "Northwestern Agricultural Sector",
+        risk_score: 0.45,
+        tier: "MEDIUM",
+        population: 18200,
+        fill_color: "#eab308",
+        category: "RISK_HEX",
+      },
       geometry: {
         type: "Polygon",
         coordinates: [
@@ -147,6 +176,7 @@ const INFRASTRUCTURE_GEOJSON: GeoJSON.FeatureCollection = {
         type: "HOSPITAL",
         status: "OPERATIONAL_BACKUP",
         capacity: "350 Beds",
+        category: "INFRASTRUCTURE",
         details: "Generator operating on 6h backup fuel reserves.",
       },
       geometry: { type: "Point", coordinates: [91.0110, 26.3260] },
@@ -159,6 +189,7 @@ const INFRASTRUCTURE_GEOJSON: GeoJSON.FeatureCollection = {
         type: "POWER_STATION",
         status: "OFFLINE_FLOODED",
         capacity: "33/11 kV",
+        category: "INFRASTRUCTURE",
         details: "Submerged. Transformer banks isolated for safety.",
       },
       geometry: { type: "Point", coordinates: [91.0280, 26.3180] },
@@ -171,6 +202,7 @@ const INFRASTRUCTURE_GEOJSON: GeoJSON.FeatureCollection = {
         type: "BRIDGE",
         status: "IMPASSABLE",
         capacity: "2-Lane",
+        category: "INFRASTRUCTURE",
         details: "0.65m flood water over deck. Rerouting required.",
       },
       geometry: { type: "Point", coordinates: [91.0150, 26.3180] },
@@ -183,6 +215,7 @@ const INFRASTRUCTURE_GEOJSON: GeoJSON.FeatureCollection = {
         type: "SHELTER",
         status: "ACTIVE_RELIEF",
         capacity: "1,200 Persons",
+        category: "INFRASTRUCTURE",
         details: "Clean drinking water distribution active.",
       },
       geometry: { type: "Point", coordinates: [90.9850, 26.3380] },
@@ -197,11 +230,12 @@ const RESCUE_FLEET_GEOJSON: GeoJSON.FeatureCollection = {
       type: "Feature",
       properties: {
         id: "ru-boat-01",
-        name: "NDRF Rescue Boat Alpha-1",
+        name: "NDRF Rescue Craft Alpha-1",
         unit_code: "BOAT-NDRF-01",
         unit_type: "RESCUE_BOAT",
         status: "AVAILABLE",
         speed_kmh: 18,
+        category: "RESOURCE",
         assigned_task: "Residential extraction at Ward 4 slipway.",
       },
       geometry: { type: "Point", coordinates: [91.0080, 26.3200] },
@@ -210,11 +244,12 @@ const RESCUE_FLEET_GEOJSON: GeoJSON.FeatureCollection = {
       type: "Feature",
       properties: {
         id: "ru-boat-02",
-        name: "NDRF Rescue Boat Alpha-2",
+        name: "NDRF Rescue Craft Alpha-2",
         unit_code: "BOAT-NDRF-02",
         unit_type: "RESCUE_BOAT",
         status: "AVAILABLE",
         speed_kmh: 18,
+        category: "RESOURCE",
         assigned_task: "Support elderly and triage transfers.",
       },
       geometry: { type: "Point", coordinates: [91.0120, 26.3150] },
@@ -228,6 +263,7 @@ const RESCUE_FLEET_GEOJSON: GeoJSON.FeatureCollection = {
         unit_type: "AMBULANCE",
         status: "AVAILABLE",
         speed_kmh: 35,
+        category: "RESOURCE",
         assigned_task: "Standby at elevated NH-31 bypass.",
       },
       geometry: { type: "Point", coordinates: [91.0200, 26.3300] },
@@ -246,10 +282,10 @@ interface GISMapProps {
 export const GISMap: React.FC<GISMapProps> = ({
   initialCenter = [91.0063, 26.3216],
   initialZoom = 11.5,
-  interactive = true,
   className = "w-full h-full min-h-[420px]",
   onFeatureClick,
 }) => {
+  const searchParams = useSearchParams();
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const { theme } = useTheme();
@@ -267,7 +303,27 @@ export const GISMap: React.FC<GISMapProps> = ({
   const [cursorCoords, setCursorCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [currentZoom, setCurrentZoom] = useState<number>(initialZoom);
 
-  // Map Tile Style based on Theme
+  // Read URL query coordinates if present
+  useEffect(() => {
+    if (!mapRef.current) return;
+    const latStr = searchParams?.get("lat");
+    const lngStr = searchParams?.get("lng");
+    const zoomStr = searchParams?.get("zoom");
+
+    if (latStr && lngStr) {
+      const targetLat = parseFloat(latStr);
+      const targetLng = parseFloat(lngStr);
+      const targetZoom = zoomStr ? parseFloat(zoomStr) : 12.5;
+
+      mapRef.current.flyTo({
+        center: [targetLng, targetLat],
+        zoom: targetZoom,
+        essential: true,
+        duration: 1200,
+      });
+    }
+  }, [searchParams]);
+
   const getMapStyle = (): StyleSpecification => {
     if (theme === "light") {
       return {
@@ -320,10 +376,15 @@ export const GISMap: React.FC<GISMapProps> = ({
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return;
 
+    const latParam = searchParams?.get("lat");
+    const lngParam = searchParams?.get("lng");
+    const startCenter: [number, number] =
+      latParam && lngParam ? [parseFloat(lngParam), parseFloat(latParam)] : initialCenter;
+
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: getMapStyle(),
-      center: initialCenter,
+      center: startCenter,
       zoom: initialZoom,
       attributionControl: false,
     });
@@ -379,10 +440,10 @@ export const GISMap: React.FC<GISMapProps> = ({
         type: "line",
         source: "hexgrid-source",
         paint: {
-          "line-line-color": "#ffffff",
+          "line-color": "#ffffff",
           "line-width": 1.5,
           "line-opacity": 0.6,
-        } as any,
+        },
       });
 
       // 3. Critical Infrastructure Source & Layer
@@ -443,25 +504,35 @@ export const GISMap: React.FC<GISMapProps> = ({
         setCurrentZoom(Number(map.getZoom().toFixed(1)));
       });
 
-      // Interactive Click Popups
+      // Setup Popups
       const setupPopup = (layerId: string, titleField: string, descField: string) => {
         map.on("click", layerId, (e) => {
           if (!e.features || !e.features[0]) return;
           const feature = e.features[0];
           const props = feature.properties as any;
-          const coordinates = (feature.geometry as any).coordinates.slice();
+          const coordinates = (feature.geometry as any).coordinates?.slice() || [
+            e.lngLat.lng,
+            e.lngLat.lat,
+          ];
+
+          const popupHtml = `
+            <div class="p-1 min-w-[180px]">
+              <h4 class="font-bold text-xs font-mono text-cyan-400 uppercase tracking-wide">
+                ${props[titleField] || props.name || props.location_name || "Incident Asset"}
+              </h4>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                ${props[descField] || props.details || props.assigned_task || `Risk Tier: ${props.tier || "CRITICAL"}`}
+              </p>
+              <div class="mt-2 pt-1 border-t border-slate-700 text-[10px] font-mono text-slate-400 flex items-center justify-between">
+                <span>Status: <strong class="text-emerald-400">${props.status || "ACTIVE"}</strong></span>
+                <span class="text-cyan-400 font-semibold">[EPSG:4326]</span>
+              </div>
+            </div>
+          `;
 
           new maplibregl.Popup()
-            .setLngLat(coordinates)
-            .setHTML(
-              `<div class="p-1">
-                <h4 class="font-bold text-xs font-mono text-cyan-400 uppercase tracking-wide">${props[titleField] || props.name || "Incident Asset"}</h4>
-                <p class="text-xs text-slate-300 mt-1 leading-relaxed">${props[descField] || props.details || props.assigned_task || ""}</p>
-                <div class="mt-2 pt-1 border-t border-slate-700 text-[10px] font-mono text-slate-400">
-                  Status: <span class="text-emerald-400">${props.status || "ACTIVE"}</span>
-                </div>
-              </div>`
-            )
+            .setLngLat(coordinates[0] instanceof Array ? coordinates[0][0] : coordinates)
+            .setHTML(popupHtml)
             .addTo(map);
 
           if (onFeatureClick) onFeatureClick(props);
@@ -477,6 +548,8 @@ export const GISMap: React.FC<GISMapProps> = ({
 
       setupPopup("infrastructure-points", "name", "details");
       setupPopup("rescue-fleet-points", "name", "assigned_task");
+      setupPopup("inundation-fill", "name", "details");
+      setupPopup("hexgrid-fill", "location_name", "tier");
     });
 
     return () => {

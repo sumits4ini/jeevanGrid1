@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/AppShell";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { EOCProvider } from "@/context/EOCContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,9 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen bg-background text-slate-100 dark:text-slate-100 antialiased`}>
         <ThemeProvider>
-          <AppShell>{children}</AppShell>
+          <EOCProvider>
+            <AppShell>{children}</AppShell>
+          </EOCProvider>
         </ThemeProvider>
       </body>
     </html>
