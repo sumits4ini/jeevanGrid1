@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Bell, Play, RefreshCw, ShieldAlert, User } from "lucide-react";
+import { Play, User } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
+import { NotificationCenterModal } from "@/components/dashboard/NotificationCenterModal";
+import { useRealtimeOperations } from "@/hooks/useRealtimeOperations";
 
 export const Header: React.FC = () => {
   const [timeStr, setTimeStr] = useState<string>("");
+  const { status: wsStatus } = useRealtimeOperations();
 
   useEffect(() => {
     const updateTime = () => {
@@ -32,11 +34,15 @@ export const Header: React.FC = () => {
       <div className="flex items-center gap-3 pl-10 lg:pl-0">
         <div className="flex items-center gap-2">
           <Badge variant="critical" size="md" dot>
-            DEFCON 2 • HIGH ALERT
+            DEFCON 1 • CRITICAL SURGE
           </Badge>
           <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-200 border border-surface-border text-xs text-slate-300 font-mono">
             <Play className="w-3 h-3 text-cyan-400 fill-cyan-400" />
             <span>Scenario: Assam Brahmaputra 2026</span>
+          </div>
+          <div className="hidden md:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-mono text-emerald-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span>{wsStatus === "CONNECTED" ? "WS/1.1 LIVE" : "RECONNECTING"}</span>
           </div>
         </div>
       </div>
@@ -53,16 +59,45 @@ export const Header: React.FC = () => {
 
         <div className="h-6 w-px bg-surface-border hidden md:block" />
 
-        {/* Notifications Bell */}
-        <button
-          className="relative p-2 rounded-lg bg-surface-200 border border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-100 transition-colors"
-          title="Critical Alerts (3 Unacknowledged)"
-        >
-          <Bell className="w-4 h-4" />
-          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-[10px] font-bold flex items-center justify-center text-white ring-2 ring-background">
-            3
-          </span>
-        </button>
+        {/* In-App Notification Center */}
+        <NotificationCenterModal
+          initialNotifications={{
+            total_notifications: 3,
+            unread_count: 2,
+            notifications: [
+              {
+                notification_id: "notif-01",
+                recipient_role: "EOC_COMMANDER",
+                title: "Severe Flood Inundation Alert — Barpeta Sector East",
+                message: "Water levels exceeded 1.25m benchmark at Ward 4 residential cluster.",
+                severity: "CRITICAL",
+                related_alert_id: "alert-01",
+                is_read: false,
+                created_at: new Date().toISOString(),
+              },
+              {
+                notification_id: "notif-02",
+                recipient_role: "DISPATCHER",
+                title: "NDRF Rescue Fleet Dispatched",
+                message: "Boats Alpha-1 and Alpha-2 mobilized to eastern riverine slipway.",
+                severity: "INFO",
+                is_read: false,
+                created_at: new Date().toISOString(),
+              },
+              {
+                notification_id: "notif-03",
+                recipient_role: "ALL",
+                title: "Hospital Backup Power Reserve Alert",
+                message: "Civil Hospital primary substation on backup fuel reserves (6h remaining).",
+                severity: "HIGH",
+                related_alert_id: "alert-02",
+                is_read: true,
+                created_at: new Date().toISOString(),
+                read_at: new Date().toISOString(),
+              },
+            ],
+          }}
+        />
 
         {/* Incident Commander User Pill */}
         <div className="flex items-center gap-2 pl-2 border-l border-surface-border">

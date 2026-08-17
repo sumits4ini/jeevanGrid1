@@ -83,7 +83,11 @@ class Settings(BaseSettings):
     ENABLE_AI_RECOMMENDATION_ENGINE: bool = True
     ML_MODEL_REGISTRY_PATH: str = "ai_ml/models/"
     USE_MOCK_ML_INFERENCE: bool = True
-    ML_INFERENCE_DEVICE: str = "cpu"
+    # Real-Time Operations & Alerts Configuration (Phase 8)
+    REALTIME_ENABLED: bool = True
+    ALERT_DEDUPLICATION_WINDOW_SECONDS: int = 300
+    REALTIME_HEARTBEAT_SECONDS: int = 30
+    MAX_IN_MEMORY_EVENTS: int = 1000
 
 
 @lru_cache()

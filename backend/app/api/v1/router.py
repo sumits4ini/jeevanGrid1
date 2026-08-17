@@ -10,6 +10,7 @@ from backend.app.api.v1.endpoints import (
     gis,
     health,
     locations,
+    operations,
     optimization,
     resources,
     risk,
@@ -26,3 +27,4 @@ api_v1_router.include_router(risk.router)
 api_v1_router.include_router(gis.router)
 api_v1_router.include_router(ai.router)
 api_v1_router.include_router(optimization.router)
+api_v1_router.include_router(operations.router)

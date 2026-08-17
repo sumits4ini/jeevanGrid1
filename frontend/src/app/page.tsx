@@ -10,15 +10,16 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { MetricsGrid } from "@/components/dashboard/MetricsGrid";
-import { MapPlaceholder } from "@/components/dashboard/MapPlaceholder";
-import { AIIntelligenceCard } from "@/components/dashboard/AIIntelligenceCard";
+import { CommandCenterOverview } from "@/components/dashboard/CommandCenterOverview";
+import { LiveAlertsCard } from "@/components/dashboard/LiveAlertsCard";
+import { LiveEventsFeed } from "@/components/dashboard/LiveEventsFeed";
 import { ResponsePlanCard } from "@/components/dashboard/ResponsePlanCard";
+import { AIIntelligenceCard } from "@/components/dashboard/AIIntelligenceCard";
+import { MapPlaceholder } from "@/components/dashboard/MapPlaceholder";
 import { DisasterOverviewCard } from "@/components/dashboard/DisasterOverviewCard";
 import { RiskZonesCard } from "@/components/dashboard/RiskZonesCard";
 import { ResourcesCard } from "@/components/dashboard/ResourcesCard";
 import { HealthStatusCard } from "@/components/dashboard/HealthStatusCard";
-import { RecentActivityCard } from "@/components/dashboard/RecentActivityCard";
 import { fetchDashboardData } from "@/services/dashboardService";
 import {
   fetchAIRecommendations,
@@ -26,16 +27,33 @@ import {
   fetchAIRiskAnalysis,
 } from "@/services/aiService";
 import { fetchResponsePlan } from "@/services/optimizationService";
+import {
+  fetchOperationsStatus,
+  fetchOperationalEvents,
+  fetchTacticalAlerts,
+} from "@/services/realtimeService";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const [data, aiRisk, aiResources, aiRecommendations, responsePlan] = await Promise.all([
+  const [
+    data,
+    aiRisk,
+    aiResources,
+    aiRecommendations,
+    responsePlan,
+    opsStatus,
+    tacticalAlerts,
+    liveEvents,
+  ] = await Promise.all([
     fetchDashboardData(),
     fetchAIRiskAnalysis(),
     fetchAIResourcePriorities(),
     fetchAIRecommendations(),
     fetchResponsePlan(),
+    fetchOperationsStatus(),
+    fetchTacticalAlerts(),
+    fetchOperationalEvents(10),
   ]);
 
   return (
@@ -50,7 +68,7 @@ export default async function DashboardPage() {
             </h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Active Multi-Hazard Incident: <span className="text-cyan-400 font-semibold">Assam Brahmaputra Basin Inundation</span> • Real-time Spatial Fusion
+            Active Multi-Hazard Incident: <span className="text-cyan-400 font-semibold">Assam Brahmaputra Basin Inundation</span> • Real-Time Spatial Fusion
           </p>
         </div>
 
@@ -68,7 +86,7 @@ export default async function DashboardPage() {
             variant="secondary"
             icon={<Download className="w-3.5 h-3.5" />}
           >
-            Export Brief
+            Export EOC Brief
           </Button>
           <Button
             size="sm"
@@ -80,20 +98,23 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* KPI Overview Metrics */}
-      <MetricsGrid metrics={data.metrics} />
+      {/* Real-Time Operational Overview & Telemetry Strip (Phase 8) */}
+      <CommandCenterOverview initialStatus={opsStatus} />
 
       {/* Main Tactical Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Primary Column: GIS Map, AI Decision Intelligence, Response Plan & Active Events (8 Cols) */}
+        {/* Left Primary Column: GIS Map, Tactical Alerts, Dispatch Plan, AI Decision Support (8 Cols) */}
         <div className="lg:col-span-8 space-y-6">
           {/* GIS Map Viewport */}
           <MapPlaceholder />
 
-          {/* Emergency Response Plan & Resource Allocation Engine Widget */}
+          {/* Real-Time Tactical Alerts Card (Phase 8) */}
+          <LiveAlertsCard initialAlerts={tacticalAlerts} />
+
+          {/* Emergency Response Plan & Resource Allocation Engine Widget (Phase 7) */}
           <ResponsePlanCard initialPlan={responsePlan} />
 
-          {/* AI Intelligence & Decision Support Matrix Widget */}
+          {/* AI Intelligence & Decision Support Matrix Widget (Phase 6) */}
           <AIIntelligenceCard
             initialRisk={aiRisk}
             initialResources={aiResources}
@@ -102,13 +123,13 @@ export default async function DashboardPage() {
 
           {/* Active Disasters Overview */}
           <DisasterOverviewCard disasters={data.disasters} />
-
-          {/* Live Activity & Distress Telemetry Log */}
-          <RecentActivityCard activities={data.recentActivities} />
         </div>
 
-        {/* Right Secondary Column: Risk Analysis, Resources Fleet, and Telemetry (4 Cols) */}
+        {/* Right Secondary Column: Live Telemetry Stream, MCDA Risk, Fleet, Health (4 Cols) */}
         <div className="lg:col-span-4 space-y-6">
+          {/* Live Operational Events Telemetry Stream (Phase 8) */}
+          <LiveEventsFeed initialEvents={liveEvents} />
+
           {/* MCDA Risk & Vulnerability Index Card */}
           <RiskZonesCard riskSummary={data.riskSummary} />
 
