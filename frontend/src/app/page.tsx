@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/Badge";
 import { MetricsGrid } from "@/components/dashboard/MetricsGrid";
 import { MapPlaceholder } from "@/components/dashboard/MapPlaceholder";
 import { AIIntelligenceCard } from "@/components/dashboard/AIIntelligenceCard";
+import { ResponsePlanCard } from "@/components/dashboard/ResponsePlanCard";
 import { DisasterOverviewCard } from "@/components/dashboard/DisasterOverviewCard";
 import { RiskZonesCard } from "@/components/dashboard/RiskZonesCard";
 import { ResourcesCard } from "@/components/dashboard/ResourcesCard";
@@ -24,15 +25,17 @@ import {
   fetchAIResourcePriorities,
   fetchAIRiskAnalysis,
 } from "@/services/aiService";
+import { fetchResponsePlan } from "@/services/optimizationService";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const [data, aiRisk, aiResources, aiRecommendations] = await Promise.all([
+  const [data, aiRisk, aiResources, aiRecommendations, responsePlan] = await Promise.all([
     fetchDashboardData(),
     fetchAIRiskAnalysis(),
     fetchAIResourcePriorities(),
     fetchAIRecommendations(),
+    fetchResponsePlan(),
   ]);
 
   return (
@@ -82,10 +85,13 @@ export default async function DashboardPage() {
 
       {/* Main Tactical Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Primary Column: GIS Map, AI Decision Intelligence, and Active Events (8 Cols) */}
+        {/* Left Primary Column: GIS Map, AI Decision Intelligence, Response Plan & Active Events (8 Cols) */}
         <div className="lg:col-span-8 space-y-6">
           {/* GIS Map Viewport */}
           <MapPlaceholder />
+
+          {/* Emergency Response Plan & Resource Allocation Engine Widget */}
+          <ResponsePlanCard initialPlan={responsePlan} />
 
           {/* AI Intelligence & Decision Support Matrix Widget */}
           <AIIntelligenceCard
