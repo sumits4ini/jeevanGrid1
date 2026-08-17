@@ -1,14 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Play, User } from "lucide-react";
+import { Moon, Play, Sun, User } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { NotificationCenterModal } from "@/components/dashboard/NotificationCenterModal";
+import { useTheme } from "@/context/ThemeContext";
 import { useRealtimeOperations } from "@/hooks/useRealtimeOperations";
 
 export const Header: React.FC = () => {
   const [timeStr, setTimeStr] = useState<string>("");
   const { status: wsStatus } = useRealtimeOperations();
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const updateTime = () => {
@@ -29,14 +31,14 @@ export const Header: React.FC = () => {
   }, []);
 
   return (
-    <header className="h-16 bg-[#080d17]/90 backdrop-blur-md border-b border-surface-border sticky top-0 z-30 px-4 lg:px-6 flex items-center justify-between gap-4">
+    <header className="h-16 bg-[#080d17]/90 dark:bg-[#080d17]/90 light:bg-white/90 backdrop-blur-md border-b border-surface-border sticky top-0 z-30 px-4 lg:px-6 flex items-center justify-between gap-4">
       {/* Left: Operational Alert Status & Scenario Info */}
       <div className="flex items-center gap-3 pl-10 lg:pl-0">
         <div className="flex items-center gap-2">
           <Badge variant="critical" size="md" dot>
             DEFCON 1 • CRITICAL SURGE
           </Badge>
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-200 border border-surface-border text-xs text-slate-300 font-mono">
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-200 border border-surface-border text-xs text-slate-300 dark:text-slate-300 light:text-slate-700 font-mono">
             <Play className="w-3 h-3 text-cyan-400 fill-cyan-400" />
             <span>Scenario: Assam Brahmaputra 2026</span>
           </div>
@@ -47,17 +49,31 @@ export const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Right: Telemetry Clock, Notifications & Commander Profile */}
+      {/* Right: Telemetry Clock, Theme Toggle, Notifications & Commander Profile */}
       <div className="flex items-center gap-3">
         {/* Real-time Clock */}
         <div className="hidden md:flex flex-col text-right">
-          <span className="text-xs font-mono font-semibold text-slate-200 tracking-wider">
+          <span className="text-xs font-mono font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 tracking-wider">
             {timeStr || "12:00:00 IST"}
           </span>
           <span className="text-[10px] text-slate-500 font-mono">DISASTER CLOCK</span>
         </div>
 
         <div className="h-6 w-px bg-surface-border hidden md:block" />
+
+        {/* Theme Toggle Button */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-xl bg-surface-200 border border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-100 transition-colors"
+          title={`Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
+          aria-label="Toggle Theme"
+        >
+          {theme === "dark" ? (
+            <Sun className="w-4 h-4 text-amber-400" />
+          ) : (
+            <Moon className="w-4 h-4 text-indigo-400" />
+          )}
+        </button>
 
         {/* In-App Notification Center */}
         <NotificationCenterModal
@@ -105,7 +121,7 @@ export const Header: React.FC = () => {
             <User className="w-4 h-4" />
           </div>
           <div className="hidden lg:flex flex-col text-left">
-            <span className="text-xs font-semibold text-slate-200 leading-tight">
+            <span className="text-xs font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 leading-tight">
               DEOC Commander
             </span>
             <span className="text-[10px] text-slate-400 font-mono">

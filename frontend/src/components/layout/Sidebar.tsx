@@ -34,10 +34,10 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Command Dashboard", href: "/", icon: Activity },
   { label: "Disaster Intelligence", href: "/disasters", icon: AlertTriangle, badge: "2 Active", badgeVariant: "critical" },
   { label: "GIS / Map Viewport", href: "/gis", icon: Layers, badge: "Vector", badgeVariant: "brand" },
-  { label: "Risk Zones (MCDA)", href: "/risk", icon: MapPin, badge: "H3 Hex", badgeVariant: "warning" },
+  { label: "Risk Zones (MCDA)", href: "/risk-zones", icon: MapPin, badge: "H3 Hex", badgeVariant: "warning" },
   { label: "Emergency Resources", href: "/resources", icon: Truck, badge: "18 Avail", badgeVariant: "success" },
-  { label: "MILP Optimization", href: "/optimization", icon: Compass },
-  { label: "System Telemetry", href: "/health", icon: Cpu, badge: "Ready", badgeVariant: "default" },
+  { label: "MILP Optimization", href: "/milp", icon: Compass },
+  { label: "System Telemetry", href: "/telemetry", icon: Cpu, badge: "Ready", badgeVariant: "default" },
   { label: "Settings & Config", href: "/settings", icon: Settings },
 ];
 
@@ -121,7 +121,11 @@ export const Sidebar: React.FC = () => {
           <nav className="p-2 space-y-1">
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
+              const isActive =
+                pathname === item.href ||
+                (item.href === "/risk-zones" && pathname === "/risk") ||
+                (item.href === "/milp" && pathname === "/optimization") ||
+                (item.href === "/telemetry" && pathname === "/health");
 
               return (
                 <Link
@@ -160,7 +164,7 @@ export const Sidebar: React.FC = () => {
           <div className="flex items-center justify-between">
             {!collapsed && (
               <div className="text-[10px] text-slate-500 font-mono">
-                SIH 2026 • v0.1.0-alpha
+                SIH 2026 • v1.0.0-Release
               </div>
             )}
             <button
