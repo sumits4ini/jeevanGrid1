@@ -373,31 +373,16 @@ export const GISMap: React.FC<GISMapProps> = ({
     };
   };
 
-  useEffect(() => {
-    if (!mapContainer.current || mapRef.current) return;
-
-    const latParam = searchParams?.get("lat");
-    const lngParam = searchParams?.get("lng");
-    const startCenter: [number, number] =
-      latParam && lngParam ? [parseFloat(lngParam), parseFloat(latParam)] : initialCenter;
-
-    const map = new maplibregl.Map({
-      container: mapContainer.current,
-      style: getMapStyle(),
-      center: startCenter,
-      zoom: initialZoom,
-      attributionControl: false,
-    });
-
-    mapRef.current = map;
-
-    map.on("load", () => {
-      // 1. Inundation Layer Source & Layer
+  const setupLayers = (map: MapLibreMap) => {
+    // 1. Inundation Layer Source & Layer
+    if (!map.getSource("inundation-source")) {
       map.addSource("inundation-source", {
         type: "geojson",
         data: INUNDATION_GEOJSON,
       });
+    }
 
+    if (!map.getLayer("inundation-fill")) {
       map.addLayer({
         id: "inundation-fill",
         type: "fill",
@@ -407,7 +392,9 @@ export const GISMap: React.FC<GISMapProps> = ({
           "fill-opacity": 0.35,
         },
       });
+    }
 
+    if (!map.getLayer("inundation-stroke")) {
       map.addLayer({
         id: "inundation-stroke",
         type: "line",
@@ -418,13 +405,17 @@ export const GISMap: React.FC<GISMapProps> = ({
           "line-dasharray": [2, 1],
         },
       });
+    }
 
-      // 2. H3 Hexgrid Source & Layer
+    // 2. H3 Hexgrid Source & Layer
+    if (!map.getSource("hexgrid-source")) {
       map.addSource("hexgrid-source", {
         type: "geojson",
         data: H3_RISK_HEXGRID_GEOJSON,
       });
+    }
 
+    if (!map.getLayer("hexgrid-fill")) {
       map.addLayer({
         id: "hexgrid-fill",
         type: "fill",
@@ -434,7 +425,9 @@ export const GISMap: React.FC<GISMapProps> = ({
           "fill-opacity": 0.4,
         },
       });
+    }
 
+    if (!map.getLayer("hexgrid-line")) {
       map.addLayer({
         id: "hexgrid-line",
         type: "line",
@@ -445,13 +438,17 @@ export const GISMap: React.FC<GISMapProps> = ({
           "line-opacity": 0.6,
         },
       });
+    }
 
-      // 3. Critical Infrastructure Source & Layer
+    // 3. Critical Infrastructure Source & Layer
+    if (!map.getSource("infrastructure-source")) {
       map.addSource("infrastructure-source", {
         type: "geojson",
         data: INFRASTRUCTURE_GEOJSON,
       });
+    }
 
+    if (!map.getLayer("infrastructure-points")) {
       map.addLayer({
         id: "infrastructure-points",
         type: "circle",
@@ -473,13 +470,17 @@ export const GISMap: React.FC<GISMapProps> = ({
           "circle-stroke-color": "#ffffff",
         },
       });
+    }
 
-      // 4. Rescue Fleet Source & Layer
+    // 4. Rescue Fleet Source & Layer
+    if (!map.getSource("rescue-fleet-source")) {
       map.addSource("rescue-fleet-source", {
         type: "geojson",
         data: RESCUE_FLEET_GEOJSON,
       });
+    }
 
+    if (!map.getLayer("rescue-fleet-points")) {
       map.addLayer({
         id: "rescue-fleet-points",
         type: "circle",
@@ -491,6 +492,76 @@ export const GISMap: React.FC<GISMapProps> = ({
           "circle-stroke-color": "#064e3b",
         },
       });
+    }
+
+    // Setup Popups
+    const setupPopup = (layerId: string, titleField: string, descField: string) => {
+      map.on("click", layerId, (e) => {
+        if (!e.features || !e.features[0]) return;
+        const feature = e.features[0];
+        const props = feature.properties as any;
+        const coordinates = (feature.geometry as any).coordinates?.slice() || [
+          e.lngLat.lng,
+          e.lngLat.lat,
+        ];
+
+        const popupHtml = `
+          <div class="p-1 min-w-[180px]">
+            <h4 class="font-bold text-xs font-mono text-cyan-600 dark:text-cyan-400 uppercase tracking-wide">
+              ${props[titleField] || props.name || props.location_name || "Incident Asset"}
+            </h4>
+            <p class="text-xs text-slate-700 dark:text-slate-300 mt-1 leading-relaxed">
+              ${props[descField] || props.details || props.assigned_task || `Risk Tier: ${props.tier || "CRITICAL"}`}
+            </p>
+            <div class="mt-2 pt-1 border-t border-slate-300 dark:border-slate-700 text-[10px] font-mono text-slate-500 dark:text-slate-400 flex items-center justify-between">
+              <span>Status: <strong class="text-emerald-600 dark:text-emerald-400">${props.status || "ACTIVE"}</strong></span>
+              <span class="text-cyan-600 dark:text-cyan-400 font-semibold">[EPSG:4326]</span>
+            </div>
+          </div>
+        `;
+
+        new maplibregl.Popup()
+          .setLngLat(coordinates[0] instanceof Array ? coordinates[0][0] : coordinates)
+          .setHTML(popupHtml)
+          .addTo(map);
+
+        if (onFeatureClick) onFeatureClick(props);
+      });
+
+      map.on("mouseenter", layerId, () => {
+        map.getCanvas().style.cursor = "pointer";
+      });
+      map.on("mouseleave", layerId, () => {
+        map.getCanvas().style.cursor = "";
+      });
+    };
+
+    setupPopup("infrastructure-points", "name", "details");
+    setupPopup("rescue-fleet-points", "name", "assigned_task");
+    setupPopup("inundation-fill", "name", "details");
+    setupPopup("hexgrid-fill", "location_name", "tier");
+  };
+
+  useEffect(() => {
+    if (!mapContainer.current || mapRef.current) return;
+
+    const latParam = searchParams?.get("lat");
+    const lngParam = searchParams?.get("lng");
+    const startCenter: [number, number] =
+      latParam && lngParam ? [parseFloat(lngParam), parseFloat(latParam)] : initialCenter;
+
+    const map = new maplibregl.Map({
+      container: mapContainer.current,
+      style: getMapStyle(),
+      center: startCenter,
+      zoom: initialZoom,
+      attributionControl: false,
+    });
+
+    mapRef.current = map;
+
+    map.on("load", () => {
+      setupLayers(map);
 
       // Cursor tracking
       map.on("mousemove", (e) => {
@@ -503,53 +574,6 @@ export const GISMap: React.FC<GISMapProps> = ({
       map.on("zoom", () => {
         setCurrentZoom(Number(map.getZoom().toFixed(1)));
       });
-
-      // Setup Popups
-      const setupPopup = (layerId: string, titleField: string, descField: string) => {
-        map.on("click", layerId, (e) => {
-          if (!e.features || !e.features[0]) return;
-          const feature = e.features[0];
-          const props = feature.properties as any;
-          const coordinates = (feature.geometry as any).coordinates?.slice() || [
-            e.lngLat.lng,
-            e.lngLat.lat,
-          ];
-
-          const popupHtml = `
-            <div class="p-1 min-w-[180px]">
-              <h4 class="font-bold text-xs font-mono text-cyan-400 uppercase tracking-wide">
-                ${props[titleField] || props.name || props.location_name || "Incident Asset"}
-              </h4>
-              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
-                ${props[descField] || props.details || props.assigned_task || `Risk Tier: ${props.tier || "CRITICAL"}`}
-              </p>
-              <div class="mt-2 pt-1 border-t border-slate-700 text-[10px] font-mono text-slate-400 flex items-center justify-between">
-                <span>Status: <strong class="text-emerald-400">${props.status || "ACTIVE"}</strong></span>
-                <span class="text-cyan-400 font-semibold">[EPSG:4326]</span>
-              </div>
-            </div>
-          `;
-
-          new maplibregl.Popup()
-            .setLngLat(coordinates[0] instanceof Array ? coordinates[0][0] : coordinates)
-            .setHTML(popupHtml)
-            .addTo(map);
-
-          if (onFeatureClick) onFeatureClick(props);
-        });
-
-        map.on("mouseenter", layerId, () => {
-          map.getCanvas().style.cursor = "pointer";
-        });
-        map.on("mouseleave", layerId, () => {
-          map.getCanvas().style.cursor = "";
-        });
-      };
-
-      setupPopup("infrastructure-points", "name", "details");
-      setupPopup("rescue-fleet-points", "name", "assigned_task");
-      setupPopup("inundation-fill", "name", "details");
-      setupPopup("hexgrid-fill", "location_name", "tier");
     });
 
     return () => {
@@ -557,6 +581,16 @@ export const GISMap: React.FC<GISMapProps> = ({
       mapRef.current = null;
     };
   }, []);
+
+  // Update style when theme changes
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    map.setStyle(getMapStyle());
+    map.once("style.load", () => {
+      setupLayers(map);
+    });
+  }, [theme]);
 
   // Update Layer Visibility
   useEffect(() => {
@@ -596,15 +630,15 @@ export const GISMap: React.FC<GISMapProps> = ({
   };
 
   return (
-    <div className={`relative rounded-2xl overflow-hidden border border-surface-border bg-[#070b12] shadow-2xl ${className}`}>
+    <div className={`relative rounded-2xl overflow-hidden border border-surface-border bg-surface-300 shadow-2xl ${className}`}>
       {/* MapLibre DOM Container */}
       <div ref={mapContainer} className="w-full h-full min-h-[420px]" />
 
       {/* Top Left: Active Operational Map Badge */}
       <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
-        <div className="px-3 py-1.5 rounded-xl bg-[#090d16]/90 backdrop-blur-md border border-cyan-500/40 shadow-lg flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-          <span className="text-xs font-mono font-bold text-slate-100">
+        <div className="px-3 py-1.5 rounded-xl bg-surface-100/95 backdrop-blur-md border border-cyan-500/40 shadow-lg flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-cyan-500 dark:bg-cyan-400 animate-pulse" />
+          <span className="text-xs font-mono font-bold text-foreground">
             Assam Barpeta Sector #4 • EPSG:4326
           </span>
         </div>
@@ -612,16 +646,16 @@ export const GISMap: React.FC<GISMapProps> = ({
 
       {/* Top Right: Layer Manager Toggle HUD */}
       <div className="absolute top-3 right-3 z-10 flex flex-col gap-1.5 max-w-[200px]">
-        <div className="p-2.5 rounded-xl bg-[#090d16]/90 backdrop-blur-md border border-surface-border shadow-xl space-y-1.5 text-xs font-mono">
-          <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 pb-1 border-b border-surface-border">
-            <Layers className="w-3.5 h-3.5 text-cyan-400" />
+        <div className="p-2.5 rounded-xl bg-surface-100/95 backdrop-blur-md border border-surface-border shadow-xl space-y-1.5 text-xs font-mono">
+          <div className="flex items-center gap-1.5 text-[11px] font-bold text-foreground pb-1 border-b border-surface-border">
+            <Layers className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
             <span>GIS Operational Layers</span>
           </div>
 
           <button
             onClick={() => toggleLayer("inundation")}
             className={`w-full flex items-center justify-between px-2 py-1 rounded transition-colors ${
-              layers.inundation ? "bg-cyan-500/20 text-cyan-300" : "text-slate-500"
+              layers.inundation ? "bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 font-semibold" : "text-slate-500"
             }`}
           >
             <span>Flood Inundation</span>
@@ -631,7 +665,7 @@ export const GISMap: React.FC<GISMapProps> = ({
           <button
             onClick={() => toggleLayer("riskHexgrid")}
             className={`w-full flex items-center justify-between px-2 py-1 rounded transition-colors ${
-              layers.riskHexgrid ? "bg-amber-500/20 text-amber-300" : "text-slate-500"
+              layers.riskHexgrid ? "bg-amber-500/20 text-amber-700 dark:text-amber-300 font-semibold" : "text-slate-500"
             }`}
           >
             <span>H3 Risk Hexgrid</span>
@@ -641,7 +675,7 @@ export const GISMap: React.FC<GISMapProps> = ({
           <button
             onClick={() => toggleLayer("infrastructure")}
             className={`w-full flex items-center justify-between px-2 py-1 rounded transition-colors ${
-              layers.infrastructure ? "bg-rose-500/20 text-rose-300" : "text-slate-500"
+              layers.infrastructure ? "bg-rose-500/20 text-rose-700 dark:text-rose-300 font-semibold" : "text-slate-500"
             }`}
           >
             <span>Hospitals & Power</span>
@@ -651,7 +685,7 @@ export const GISMap: React.FC<GISMapProps> = ({
           <button
             onClick={() => toggleLayer("rescueFleet")}
             className={`w-full flex items-center justify-between px-2 py-1 rounded transition-colors ${
-              layers.rescueFleet ? "bg-emerald-500/20 text-emerald-300" : "text-slate-500"
+              layers.rescueFleet ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-semibold" : "text-slate-500"
             }`}
           >
             <span>Rescue Fleet</span>
@@ -662,41 +696,41 @@ export const GISMap: React.FC<GISMapProps> = ({
 
       {/* Bottom Right: Zoom & Navigation Controls */}
       <div className="absolute bottom-10 right-3 z-10 flex flex-col gap-1.5">
-        <div className="flex flex-col bg-[#090d16]/90 backdrop-blur-md rounded-xl border border-surface-border shadow-xl overflow-hidden">
+        <div className="flex flex-col bg-surface-100/95 backdrop-blur-md rounded-xl border border-surface-border shadow-xl overflow-hidden">
           <button
             onClick={handleZoomIn}
-            className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors border-b border-surface-border/60"
+            className="p-2 text-foreground hover:bg-surface-200 transition-colors border-b border-surface-border"
             title="Zoom In"
           >
             <ZoomIn className="w-4 h-4" />
           </button>
           <button
             onClick={handleZoomOut}
-            className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors border-b border-surface-border/60"
+            className="p-2 text-foreground hover:bg-surface-200 transition-colors border-b border-surface-border"
             title="Zoom Out"
           >
             <ZoomOut className="w-4 h-4" />
           </button>
           <button
             onClick={handleReset}
-            className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-2 text-foreground hover:bg-surface-200 transition-colors"
             title="Fit to Epicenter"
           >
-            <Crosshair className="w-4 h-4 text-cyan-400" />
+            <Crosshair className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />
           </button>
         </div>
       </div>
 
       {/* Bottom Left: Live HUD Coordinates Inspector */}
       <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2">
-        <div className="px-3 py-1 rounded-lg bg-[#090d16]/90 backdrop-blur-md border border-surface-border text-[10px] font-mono text-slate-400 flex items-center gap-3 shadow-lg">
+        <div className="px-3 py-1 rounded-lg bg-surface-100/95 backdrop-blur-md border border-surface-border text-[10px] font-mono text-slate-600 dark:text-slate-400 flex items-center gap-3 shadow-lg">
           <span>
-            Cursor: <strong className="text-slate-200">{cursorCoords ? `${cursorCoords.lat}° N, ${cursorCoords.lng}° E` : "26.3216° N, 91.0063° E"}</strong>
+            Cursor: <strong className="text-foreground">{cursorCoords ? `${cursorCoords.lat}° N, ${cursorCoords.lng}° E` : "26.3216° N, 91.0063° E"}</strong>
           </span>
           <span>
-            Zoom: <strong className="text-cyan-400">{currentZoom}x</strong>
+            Zoom: <strong className="text-cyan-600 dark:text-cyan-400">{currentZoom}x</strong>
           </span>
-          <span className="text-emerald-400 font-bold">WGS84 GPS READY</span>
+          <span className="text-emerald-600 dark:text-emerald-400 font-bold">WGS84 GPS READY</span>
         </div>
       </div>
     </div>

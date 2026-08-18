@@ -4,30 +4,55 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root,
+html.dark,
+html[data-theme="dark"] {
   --background: #070b12;
   --foreground: #f8fafc;
-  --surface-bg: #0f172a;
-  --surface-card: #131b2e;
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
+  --surface-50: #1e293b;
+  --surface-100: #131b2e;
+  --surface-200: #0f172a;
+  --surface-300: #070b12;
   --surface-border: #1e293b;
-  --text-muted: #94a3b8;
+  --surface-border-subtle: #1e293b80;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --header-bg: rgba(7, 11, 18, 0.9);
+  --sidebar-bg: #070b12;
+  --input-bg: #0f172a;
+  --input-border: #334155;
 }
 
-html.light {
+html.light,
+html[data-theme="light"] {
   --background: #f1f5f9;
   --foreground: #0f172a;
-  --surface-bg: #ffffff;
-  --surface-card: #f8fafc;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --surface-50: #e2e8f0;
+  --surface-100: #ffffff;
+  --surface-200: #f8fafc;
+  --surface-300: #ffffff;
   --surface-border: #cbd5e1;
-  --text-muted: #475569;
+  --surface-border-subtle: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --header-bg: rgba(255, 255, 255, 0.95);
+  --sidebar-bg: #ffffff;
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background-color: var(--background);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   overflow-x: hidden;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 /* Custom Tactical Scrollbar */
@@ -46,52 +71,33 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #64748b;
 }
 
-/* MapLibre Canvas Fixes */
+/* MapLibre Canvas & Control Fixes */
 .maplibregl-map {
   font-family: inherit;
 }
 
 .maplibregl-popup-content {
-  background: #0f172a !important;
-  color: #f8fafc !important;
-  border: 1px solid #1e293b !important;
+  background: var(--surface-100) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--surface-border) !important;
   border-radius: 12px !important;
   padding: 12px !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
-}
-
-.light .maplibregl-popup-content {
-  background: #ffffff !important;
-  color: #0f172a !important;
-  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3) !important;
 }
 
 .maplibregl-popup-tip {
-  border-top-color: #0f172a !important;
-}
-
-.light .maplibregl-popup-tip {
-  border-top-color: #ffffff !important;
+  border-top-color: var(--surface-100) !important;
 }
 
 .maplibregl-ctrl-group {
-  background: #0f172a !important;
-  border: 1px solid #1e293b !important;
+  background: var(--surface-100) !important;
+  border: 1px solid var(--surface-border) !important;
   border-radius: 8px !important;
 }
 
-.light .maplibregl-ctrl-group {
-  background: #ffffff !important;
-  border: 1px solid #cbd5e1 !important;
-}
-
 .maplibregl-ctrl button {
-  border-bottom: 1px solid #1e293b !important;
-}
-
-.light .maplibregl-ctrl button {
-  border-bottom: 1px solid #cbd5e1 !important;
+  border-bottom: 1px solid var(--surface-border) !important;
 }

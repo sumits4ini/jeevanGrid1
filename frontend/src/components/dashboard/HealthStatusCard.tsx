@@ -56,13 +56,13 @@ export const HealthStatusCard: React.FC<HealthStatusCardProps> = ({ health }) =>
           return (
             <div
               key={idx}
-              className="p-2.5 rounded-lg bg-surface-100/60 border border-surface-border flex items-center justify-between text-xs"
+              className="p-2.5 rounded-lg bg-surface-200 border border-surface-border flex items-center justify-between text-xs"
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <Icon className="w-4 h-4 text-slate-400 shrink-0" />
+                <Icon className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" />
                 <div className="truncate">
-                  <p className="font-medium text-slate-200 truncate">{item.name}</p>
-                  <p className="text-[10px] text-slate-500 font-mono truncate">
+                  <p className="font-medium text-foreground truncate">{item.name}</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono truncate">
                     {service.message || "Ready"}
                   </p>
                 </div>

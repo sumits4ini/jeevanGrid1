@@ -114,12 +114,12 @@ export default function TelemetryPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-surface-100 border border-surface-border shadow-xl">
         <div>
           <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-            <h1 className="text-xl lg:text-2xl font-bold tracking-tight text-slate-100 dark:text-slate-100 light:text-slate-900">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <h1 className="text-xl lg:text-2xl font-bold tracking-tight text-foreground">
               System Telemetry & Operational Health Center
             </h1>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Live subsystem diagnostics, spatial compute node telemetry, and database connectivity monitoring
           </p>
         </div>
@@ -130,7 +130,7 @@ export default function TelemetryPage() {
             variant="secondary"
             onClick={runDiagnostics}
             disabled={isDiagnosticRunning}
-            icon={<RefreshCw className={`w-3.5 h-3.5 ${isDiagnosticRunning ? "animate-spin text-cyan-400" : ""}`} />}
+            icon={<RefreshCw className={`w-3.5 h-3.5 ${isDiagnosticRunning ? "animate-spin text-cyan-500 dark:text-cyan-400" : ""}`} />}
           >
             {isDiagnosticRunning ? "Running Diagnostics..." : "Run Health Diagnostic"}
           </Button>
@@ -140,35 +140,35 @@ export default function TelemetryPage() {
       {/* KPI Overview */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="p-4 rounded-xl bg-surface-100 border border-surface-border">
-          <span className="text-[10px] uppercase font-mono text-slate-400">Subsystems Online</span>
-          <div className="text-2xl font-bold font-mono text-emerald-400 mt-1">
+          <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">Subsystems Online</span>
+          <div className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-1">
             {subsystems.filter((s) => s.status === "HEALTHY").length} / {subsystems.length}
           </div>
-          <span className="text-[10px] text-emerald-400 font-mono">100% Core Readiness</span>
+          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">100% Core Readiness</span>
         </div>
 
         <div className="p-4 rounded-xl bg-surface-100 border border-surface-border">
-          <span className="text-[10px] uppercase font-mono text-slate-400">Mean REST Latency</span>
-          <div className="text-2xl font-bold font-mono text-cyan-400 mt-1">
+          <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">Mean REST Latency</span>
+          <div className="text-2xl font-bold font-mono text-cyan-600 dark:text-cyan-400 mt-1">
             {(subsystems.reduce((acc, s) => acc + s.latency_ms, 0) / subsystems.length).toFixed(1)} ms
           </div>
-          <span className="text-[10px] text-slate-500 font-mono">Local Uvicorn Server</span>
+          <span className="text-[10px] text-slate-400 font-mono">Local Uvicorn Server</span>
         </div>
 
         <div className="p-4 rounded-xl bg-surface-100 border border-surface-border">
-          <span className="text-[10px] uppercase font-mono text-slate-400">WebSocket Stream</span>
-          <div className="text-2xl font-bold font-mono text-emerald-400 mt-1">
+          <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">WebSocket Stream</span>
+          <div className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-1">
             {connectionStatus === "CONNECTED" ? "CONNECTED" : "RECONNECTING"}
           </div>
-          <span className="text-[10px] text-emerald-400 font-mono">WS/1.1 Heartbeat 30s</span>
+          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">WS/1.1 Heartbeat 30s</span>
         </div>
 
         <div className="p-4 rounded-xl bg-surface-100 border border-surface-border">
-          <span className="text-[10px] uppercase font-mono text-slate-400">Telemetry Sync</span>
-          <div className="text-2xl font-bold font-mono text-slate-100 mt-1">
+          <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">Telemetry Sync</span>
+          <div className="text-2xl font-bold font-mono text-foreground mt-1">
             {secondsSinceSync}s ago
           </div>
-          <span className="text-[10px] text-cyan-400 font-mono">Auto-Syncing</span>
+          <span className="text-[10px] text-cyan-600 dark:text-cyan-400 font-mono">Auto-Syncing</span>
         </div>
       </div>
 
@@ -178,11 +178,11 @@ export default function TelemetryPage() {
           <Card key={idx} className="border-surface-border bg-surface-100 p-4 space-y-3 shadow-lg">
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-start gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-surface-200 border border-surface-border flex items-center justify-center text-cyan-400 shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-surface-200 border border-surface-border flex items-center justify-center text-cyan-500 dark:text-cyan-400 shrink-0">
                   <Server className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-100">{sub.name}</h3>
+                  <h3 className="text-sm font-bold text-foreground">{sub.name}</h3>
                   <span className="text-[10px] font-mono text-slate-500">[{sub.category}]</span>
                 </div>
               </div>
@@ -191,14 +191,14 @@ export default function TelemetryPage() {
               </Badge>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed">{sub.details}</p>
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{sub.details}</p>
 
-            <div className="pt-2.5 border-t border-surface-border/60 flex items-center justify-between text-xs font-mono">
-              <span className="text-slate-400">
-                Latency: <strong className="text-emerald-400">{sub.latency_ms} ms</strong>
+            <div className="pt-2.5 border-t border-surface-border flex items-center justify-between text-xs font-mono">
+              <span className="text-slate-500 dark:text-slate-400">
+                Latency: <strong className="text-emerald-600 dark:text-emerald-400">{sub.latency_ms} ms</strong>
               </span>
-              <span className="text-slate-400">
-                Uptime: <strong className="text-slate-200">{sub.uptime}</strong>
+              <span className="text-slate-500 dark:text-slate-400">
+                Uptime: <strong className="text-foreground">{sub.uptime}</strong>
               </span>
             </div>
           </Card>

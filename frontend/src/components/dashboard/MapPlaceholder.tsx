@@ -8,7 +8,7 @@ export const MapPlaceholder: React.FC = () => {
     <div className="w-full h-[460px] rounded-2xl overflow-hidden shadow-2xl border border-surface-border">
       <Suspense
         fallback={
-          <div className="w-full h-full flex items-center justify-center bg-[#070b12] text-xs font-mono text-slate-400">
+          <div className="w-full h-full flex items-center justify-center bg-surface-300 text-xs font-mono text-slate-500 dark:text-slate-400">
             Initializing MapLibre GL JS Engine...
           </div>
         }

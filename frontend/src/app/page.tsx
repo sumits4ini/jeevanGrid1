@@ -40,16 +40,16 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 pb-12">
       {/* Top Banner / Operational Command Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-surface-100 via-surface-200 to-surface-100 border border-surface-border shadow-xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-surface-100 border border-surface-border shadow-xl">
         <div>
           <div className="flex items-center gap-2.5">
             <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
-            <h1 className="text-xl lg:text-2xl font-bold tracking-tight text-slate-100 dark:text-slate-100 light:text-slate-900">
+            <h1 className="text-xl lg:text-2xl font-bold tracking-tight text-foreground">
               Emergency Operations Center (EOC) Command
             </h1>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Active Multi-Hazard Incident: <span className="text-cyan-400 font-semibold">Assam Brahmaputra Basin Inundation</span> • Real-Time Spatial Fusion
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Active Multi-Hazard Incident: <span className="text-cyan-600 dark:text-cyan-400 font-semibold">Assam Brahmaputra Basin Inundation</span> • Real-Time Spatial Fusion
           </p>
         </div>
 
@@ -65,7 +65,7 @@ export default function DashboardPage() {
             Sync Telemetry
           </Button>
           <Link href="/disasters">
-            <Button size="sm" variant="secondary" icon={<Flame className="w-3.5 h-3.5 text-rose-400" />}>
+            <Button size="sm" variant="secondary" icon={<Flame className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />}>
               Active Hazards
             </Button>
           </Link>

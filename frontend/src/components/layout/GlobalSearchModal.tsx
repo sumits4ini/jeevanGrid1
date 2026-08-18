@@ -130,23 +130,23 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
       <div className="w-full max-w-2xl rounded-2xl bg-surface-100 border border-surface-border shadow-2xl overflow-hidden flex flex-col">
         {/* Search Header */}
         <div className="p-4 border-b border-surface-border flex items-center gap-3">
-          <Search className="w-5 h-5 text-cyan-400 shrink-0" />
+          <Search className="w-5 h-5 text-cyan-500 dark:text-cyan-400 shrink-0" />
           <input
             type="text"
             autoFocus
             placeholder="Search active incidents, rescue units, H3 hex cells, facilities..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 bg-transparent text-sm text-slate-100 placeholder-slate-500 focus:outline-none font-mono"
+            className="flex-1 bg-transparent text-sm text-foreground placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none font-mono"
           />
-          <kbd className="hidden sm:inline-block px-2 py-0.5 rounded bg-surface-200 text-[10px] font-mono text-slate-400 border border-surface-border">
+          <kbd className="hidden sm:inline-block px-2 py-0.5 rounded bg-surface-200 text-[10px] font-mono text-slate-500 dark:text-slate-400 border border-surface-border">
             ESC
           </kbd>
-          <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-200">
+          <button onClick={onClose} className="p-1 text-slate-400 hover:text-foreground">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -154,7 +154,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
         {/* Results List */}
         <div className="p-2 max-h-96 overflow-y-auto space-y-1">
           {results.length === 0 ? (
-            <div className="p-8 text-center text-xs text-slate-400 font-mono">
+            <div className="p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-mono">
               No matching EOC assets, incidents, or H3 hex cells found for &quot;{query}&quot;.
             </div>
           ) : (
@@ -168,29 +168,29 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`p-3 rounded-xl flex items-center justify-between gap-3 cursor-pointer transition-colors ${
                     isSelected
-                      ? "bg-cyan-500/10 border border-cyan-500/40 text-slate-100"
-                      : "text-slate-300 hover:bg-surface-200"
+                      ? "bg-cyan-500/10 border border-cyan-500/40 text-foreground"
+                      : "text-slate-700 dark:text-slate-300 hover:bg-surface-200"
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div
                       className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                         item.category === "INCIDENT"
-                          ? "bg-rose-500/20 text-rose-400"
+                          ? "bg-rose-500/20 text-rose-600 dark:text-rose-400"
                           : item.category === "RESOURCE"
-                          ? "bg-emerald-500/20 text-emerald-400"
+                          ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
                           : item.category === "RISK_HEX"
-                          ? "bg-amber-500/20 text-amber-400"
-                          : "bg-cyan-500/20 text-cyan-400"
+                          ? "bg-amber-500/20 text-amber-600 dark:text-amber-400"
+                          : "bg-cyan-500/20 text-cyan-600 dark:text-cyan-400"
                       }`}
                     >
                       <Icon className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold font-mono truncate">{item.title}</span>
+                        <span className="text-xs font-bold font-mono truncate text-foreground">{item.title}</span>
                       </div>
-                      <p className="text-[11px] text-slate-400 truncate mt-0.5">{item.subtitle}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{item.subtitle}</p>
                     </div>
                   </div>
 
@@ -215,9 +215,9 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
         </div>
 
         {/* Footer info */}
-        <div className="p-3 bg-surface-200 border-t border-surface-border flex items-center justify-between text-[10px] font-mono text-slate-400">
+        <div className="p-3 bg-surface-200 border-t border-surface-border flex items-center justify-between text-[10px] font-mono text-slate-500 dark:text-slate-400">
           <span>Navigate with ↑ ↓ and Press Enter to Focus on Map</span>
-          <span className="text-cyan-400 font-semibold">JeevanGrid OmniSearch</span>
+          <span className="text-cyan-600 dark:text-cyan-400 font-semibold">JeevanGrid OmniSearch</span>
         </div>
       </div>
     </div>

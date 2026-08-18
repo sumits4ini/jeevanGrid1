@@ -51,7 +51,7 @@ export const Sidebar: React.FC = () => {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="lg:hidden fixed top-3 left-3 z-50 p-2 rounded-lg bg-surface-100 border border-surface-border text-slate-200 shadow-md"
+        className="lg:hidden fixed top-3 left-3 z-50 p-2 rounded-lg bg-surface-100 border border-surface-border text-foreground shadow-md"
         aria-label="Open Navigation Menu"
       >
         <Menu className="w-5 h-5" />
@@ -61,31 +61,31 @@ export const Sidebar: React.FC = () => {
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          className="lg:hidden fixed inset-0 z-40 bg-black/70 backdrop-blur-sm transition-opacity"
+          className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity"
         />
       )}
 
       {/* Sidebar Container */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-40 h-screen bg-[#070b12] border-r border-surface-border/80 flex flex-col justify-between transition-all duration-300 ease-in-out",
+          "fixed top-0 left-0 z-40 h-screen bg-surface-300 border-r border-surface-border flex flex-col justify-between transition-all duration-300 ease-in-out shadow-xl",
           collapsed ? "w-20" : "w-64",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
         {/* Top Branding Section */}
         <div>
-          <div className="h-16 flex items-center justify-between px-4 border-b border-surface-border/60">
+          <div className="h-16 flex items-center justify-between px-4 border-b border-surface-border">
             <Link href="/" className="flex items-center gap-3 overflow-hidden">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center text-white shadow-lg shadow-cyan-950/50 shrink-0">
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center text-white shadow-lg shadow-cyan-950/30 shrink-0">
                 <Shield className="w-5 h-5" />
               </div>
               {!collapsed && (
                 <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-bold tracking-wider text-slate-100 flex items-center gap-1.5">
-                    JEEVAN<span className="text-cyan-400">GRID</span>
+                  <span className="text-sm font-bold tracking-wider text-foreground flex items-center gap-1.5">
+                    JEEVAN<span className="text-cyan-500 dark:text-cyan-400">GRID</span>
                   </span>
-                  <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400">
+                  <span className="text-[10px] uppercase font-mono tracking-widest text-slate-500 dark:text-slate-400">
                     Disaster Intel EOC
                   </span>
                 </div>
@@ -95,7 +95,7 @@ export const Sidebar: React.FC = () => {
             {/* Mobile Close Button */}
             <button
               onClick={() => setMobileOpen(false)}
-              className="lg:hidden text-slate-400 hover:text-slate-200"
+              className="lg:hidden text-slate-500 hover:text-foreground"
             >
               <X className="w-5 h-5" />
             </button>
@@ -103,15 +103,15 @@ export const Sidebar: React.FC = () => {
 
           {/* Operational Status Pill in Sidebar */}
           {!collapsed && (
-            <div className="mx-3 my-3 p-2.5 rounded-lg bg-surface-200/80 border border-surface-border">
+            <div className="mx-3 my-3 p-2.5 rounded-lg bg-surface-200 border border-surface-border">
               <div className="flex items-center justify-between text-[11px]">
-                <span className="text-slate-400 font-mono">INCIDENT EOC</span>
-                <span className="flex items-center gap-1 text-emerald-400 font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-slate-500 dark:text-slate-400 font-mono">INCIDENT EOC</span>
+                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   ONLINE
                 </span>
               </div>
-              <p className="text-[11px] text-slate-300 font-semibold mt-1 truncate">
+              <p className="text-[11px] text-foreground font-semibold mt-1 truncate">
                 Assam Barpeta Sector #4
               </p>
             </div>
@@ -135,11 +135,11 @@ export const Sidebar: React.FC = () => {
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all group relative",
                     isActive
-                      ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-sm"
-                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                      ? "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 shadow-sm font-semibold"
+                      : "text-slate-600 dark:text-slate-400 hover:text-foreground hover:bg-surface-200"
                   )}
                 >
-                  <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-cyan-400" : "text-slate-400 group-hover:text-slate-200")} />
+                  <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-cyan-600 dark:text-cyan-400" : "text-slate-500 dark:text-slate-400 group-hover:text-foreground")} />
                   {!collapsed && (
                     <span className="flex-1 truncate">{item.label}</span>
                   )}
@@ -149,7 +149,7 @@ export const Sidebar: React.FC = () => {
                     </Badge>
                   )}
                   {collapsed && (
-                    <div className="absolute left-full ml-2 px-2 py-1 bg-slate-900 text-slate-200 text-xs rounded-md shadow-lg border border-slate-700 whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity z-50">
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-surface-100 text-foreground text-xs rounded-md shadow-lg border border-surface-border whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity z-50">
                       {item.label}
                     </div>
                   )}
@@ -160,16 +160,16 @@ export const Sidebar: React.FC = () => {
         </div>
 
         {/* Bottom Section: Collapse Toggle & Version */}
-        <div className="p-3 border-t border-surface-border/60">
+        <div className="p-3 border-t border-surface-border">
           <div className="flex items-center justify-between">
             {!collapsed && (
-              <div className="text-[10px] text-slate-500 font-mono">
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
                 SIH 2026 • v1.0.0-Release
               </div>
             )}
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="hidden lg:flex items-center justify-center p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+              className="hidden lg:flex items-center justify-center p-1.5 rounded-lg text-slate-500 hover:text-foreground hover:bg-surface-200 transition-colors"
               title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}

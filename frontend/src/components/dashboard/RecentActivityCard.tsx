@@ -13,13 +13,13 @@ export const RecentActivityCard: React.FC<RecentActivityCardProps> = ({ activiti
   const getSeverityIcon = (sev: ActivitySeverity) => {
     switch (sev) {
       case "CRITICAL":
-        return <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />;
+        return <AlertCircle className="w-4 h-4 text-rose-500 dark:text-rose-400 shrink-0 mt-0.5" />;
       case "WARNING":
-        return <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />;
+        return <AlertCircle className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />;
       case "SUCCESS":
-        return <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />;
+        return <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />;
       default:
-        return <Info className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />;
+        return <Info className="w-4 h-4 text-sky-500 dark:text-sky-400 shrink-0 mt-0.5" />;
     }
   };
 
@@ -39,23 +39,23 @@ export const RecentActivityCard: React.FC<RecentActivityCardProps> = ({ activiti
         {activities.map((act) => (
           <div
             key={act.id}
-            className="p-3 rounded-lg bg-surface-100/60 border border-surface-border flex items-start gap-3"
+            className="p-3 rounded-lg bg-surface-200 border border-surface-border flex items-start gap-3"
           >
             {getSeverityIcon(act.severity)}
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
-                <h5 className="text-xs font-semibold text-slate-200 truncate">{act.title}</h5>
-                <span className="text-[10px] text-slate-500 font-mono shrink-0">
+                <h5 className="text-xs font-semibold text-foreground truncate">{act.title}</h5>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono shrink-0">
                   {formatRelativeTime(act.timestamp)}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">{act.description}</p>
-              <div className="mt-2 flex items-center gap-2 text-[10px] font-mono text-slate-500">
-                <span className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-400">
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{act.description}</p>
+              <div className="mt-2 flex items-center gap-2 text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                <span className="px-1.5 py-0.5 rounded bg-surface-100 border border-surface-border text-slate-600 dark:text-slate-400">
                   {act.source}
                 </span>
                 {act.targetLocation && (
-                  <span className="text-cyan-400/80">• {act.targetLocation}</span>
+                  <span className="text-cyan-600 dark:text-cyan-400 font-medium">• {act.targetLocation}</span>
                 )}
               </div>
             </div>

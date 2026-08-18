@@ -61,7 +61,7 @@ export const Header: React.FC = () => {
 
   return (
     <>
-      <header className="h-16 bg-[#080d17]/90 dark:bg-[#080d17]/90 light:bg-white/90 backdrop-blur-md border-b border-surface-border sticky top-0 z-30 px-4 lg:px-6 flex items-center justify-between gap-4">
+      <header className="h-16 bg-surface-100/90 backdrop-blur-md border-b border-surface-border sticky top-0 z-30 px-4 lg:px-6 flex items-center justify-between gap-4 transition-colors duration-150">
         {/* Left: Operational Alert Status & Scenario Info */}
         <div className="flex items-center gap-3 pl-10 lg:pl-0">
           <div className="flex items-center gap-2">
@@ -71,8 +71,8 @@ export const Header: React.FC = () => {
                 : "DEFCON 2 • HIGH ALERT"}
             </Badge>
 
-            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-200 border border-surface-border text-xs text-slate-300 dark:text-slate-300 light:text-slate-700 font-mono">
-              <Play className="w-3 h-3 text-cyan-400 fill-cyan-400" />
+            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-200 border border-surface-border text-xs text-foreground font-mono">
+              <Play className="w-3 h-3 text-cyan-500 dark:text-cyan-400 fill-cyan-500 dark:fill-cyan-400" />
               <span>Assam Brahmaputra 2026</span>
             </div>
 
@@ -80,19 +80,19 @@ export const Header: React.FC = () => {
             <div
               className={`hidden md:flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-mono ${
                 connectionStatus === "CONNECTED"
-                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
                   : connectionStatus === "RECONNECTING"
-                  ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
-                  : "bg-rose-500/10 border-rose-500/30 text-rose-400"
+                  ? "bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400"
+                  : "bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400"
               }`}
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
                   connectionStatus === "CONNECTED"
-                    ? "bg-emerald-400 animate-pulse"
+                    ? "bg-emerald-500 animate-pulse"
                     : connectionStatus === "RECONNECTING"
-                    ? "bg-amber-400 animate-ping"
-                    : "bg-rose-400"
+                    ? "bg-amber-500 animate-ping"
+                    : "bg-rose-500"
                 }`}
               />
               <span>
@@ -111,12 +111,12 @@ export const Header: React.FC = () => {
           {/* Omni Global Search Trigger */}
           <button
             onClick={() => setIsSearchOpen(true)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-200 hover:bg-surface-100 border border-surface-border text-xs font-mono text-slate-300 transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-200 hover:bg-surface-50 border border-surface-border text-xs font-mono text-foreground transition-colors"
             title="Search Incidents, Assets, Coordinates (Ctrl+K)"
           >
-            <Search className="w-3.5 h-3.5 text-cyan-400" />
+            <Search className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
             <span className="hidden md:inline">Search EOC</span>
-            <kbd className="hidden md:inline-block px-1.5 py-0.2 rounded bg-surface-100 text-[9px] text-slate-400 border border-surface-border">
+            <kbd className="hidden md:inline-block px-1.5 py-0.2 rounded bg-surface-100 text-[9px] text-slate-500 dark:text-slate-400 border border-surface-border">
               Ctrl+K
             </kbd>
           </button>
@@ -125,18 +125,19 @@ export const Header: React.FC = () => {
           <button
             onClick={() => refreshAll()}
             disabled={isRefreshing}
-            className="p-2 rounded-xl bg-surface-200 hover:bg-surface-100 border border-surface-border text-slate-300 hover:text-cyan-400 transition-colors"
+            className="p-2 rounded-xl bg-surface-200 hover:bg-surface-50 border border-surface-border text-foreground hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors"
             title={`Last synced ${secondsSinceSync}s ago. Click to refresh.`}
+            aria-label="Refresh EOC Telemetry"
           >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-cyan-400" : ""}`} />
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-cyan-500 dark:text-cyan-400" : ""}`} />
           </button>
 
           {/* Real-time Clock */}
           <div className="hidden lg:flex flex-col text-right">
-            <span className="text-xs font-mono font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 tracking-wider">
+            <span className="text-xs font-mono font-semibold text-foreground tracking-wider">
               {timeStr || "12:00:00 IST"}
             </span>
-            <span className="text-[10px] text-slate-500 font-mono">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
               SYNCED {secondsSinceSync}S AGO
             </span>
           </div>
@@ -146,14 +147,14 @@ export const Header: React.FC = () => {
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-xl bg-surface-200 border border-surface-border text-slate-300 hover:text-slate-100 hover:bg-surface-100 transition-colors"
+            className="p-2 rounded-xl bg-surface-200 border border-surface-border text-foreground hover:bg-surface-50 transition-colors"
             title={`Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
             aria-label="Toggle Theme"
           >
             {theme === "dark" ? (
               <Sun className="w-4 h-4 text-amber-400" />
             ) : (
-              <Moon className="w-4 h-4 text-indigo-400" />
+              <Moon className="w-4 h-4 text-indigo-600" />
             )}
           </button>
 
@@ -199,14 +200,14 @@ export const Header: React.FC = () => {
 
           {/* Incident Commander User Pill */}
           <div className="flex items-center gap-2 pl-2 border-l border-surface-border">
-            <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-cyan-400">
+            <div className="w-8 h-8 rounded-lg bg-surface-200 border border-surface-border flex items-center justify-center text-cyan-500 dark:text-cyan-400">
               <User className="w-4 h-4" />
             </div>
             <div className="hidden lg:flex flex-col text-left">
-              <span className="text-xs font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 leading-tight">
+              <span className="text-xs font-semibold text-foreground leading-tight">
                 DEOC Commander
               </span>
-              <span className="text-[10px] text-slate-400 font-mono">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
                 Barpeta District
               </span>
             </div>

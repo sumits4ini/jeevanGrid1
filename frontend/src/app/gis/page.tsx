@@ -40,19 +40,19 @@ function GISViewportContent() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-surface-100 border border-surface-border shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/30 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/30 border border-cyan-500/40 flex items-center justify-center text-cyan-500 dark:text-cyan-400 shrink-0">
             <Layers className="w-5 h-5 animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl font-bold tracking-tight text-slate-100 dark:text-slate-100 light:text-slate-900">
+              <h1 className="text-xl font-bold tracking-tight text-foreground">
                 GIS Spatial Command Viewport
               </h1>
               <Badge variant="brand" size="sm">
                 MapLibre GL JS • Vector Engine
               </Badge>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               High-precision WGS84 geodesic overlays, PostGIS polygon layers, and dynamic fleet tracking
             </p>
           </div>
@@ -80,58 +80,58 @@ function GISViewportContent() {
         {/* Right Feature Inspector Column (3 Cols) */}
         <div className="lg:col-span-3 space-y-4">
           <Card className="border-surface-border bg-surface-100 p-4 space-y-3 shadow-xl">
-            <div className="flex items-center gap-2 text-xs font-bold text-slate-200 uppercase font-mono pb-2 border-b border-surface-border">
-              <MapPin className="w-4 h-4 text-cyan-400" />
+            <div className="flex items-center gap-2 text-xs font-bold text-foreground uppercase font-mono pb-2 border-b border-surface-border">
+              <MapPin className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />
               <span>Spatial Feature Inspector</span>
             </div>
 
             <div className="space-y-2 text-xs">
               <div className="p-3 rounded-lg bg-surface-200 border border-surface-border">
-                <span className="text-[10px] font-mono text-slate-400 uppercase">Selected Asset / Zone</span>
-                <h4 className="text-sm font-bold text-cyan-400 mt-0.5">{selectedFeature.name}</h4>
+                <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase">Selected Asset / Zone</span>
+                <h4 className="text-sm font-bold text-cyan-600 dark:text-cyan-400 mt-0.5">{selectedFeature.name}</h4>
                 <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
                   <Badge variant="critical" size="sm">
                     {selectedFeature.status || "ACTIVE"}
                   </Badge>
-                  <span className="text-[10px] font-mono text-slate-400">{selectedFeature.type}</span>
+                  <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">{selectedFeature.type}</span>
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg bg-surface-200 border border-surface-border text-slate-300 leading-relaxed text-[11px]">
-                <strong className="text-slate-400 block text-[10px] uppercase font-mono mb-1">
+              <div className="p-3 rounded-lg bg-surface-200 border border-surface-border text-slate-700 dark:text-slate-300 leading-relaxed text-[11px]">
+                <strong className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-mono mb-1">
                   Tactical Telemetry:
                 </strong>
                 {selectedFeature.details || selectedFeature.assigned_task || "Real-time spatial telemetry synchronized with PostGIS spatial index."}
               </div>
 
-              <div className="p-2.5 rounded-lg bg-surface-200 border border-surface-border text-[10px] font-mono text-slate-400 space-y-1">
-                <div>Coordinates: <strong className="text-slate-200">{selectedFeature.coordinates || "26.3216° N, 91.0063° E"}</strong></div>
-                <div>CRS Projection: <strong className="text-emerald-400">EPSG:4326 (WGS84)</strong></div>
-                <div>Spatial Index: <strong className="text-cyan-400">GiST R-Tree</strong></div>
+              <div className="p-2.5 rounded-lg bg-surface-200 border border-surface-border text-[10px] font-mono text-slate-500 dark:text-slate-400 space-y-1">
+                <div>Coordinates: <strong className="text-foreground">{selectedFeature.coordinates || "26.3216° N, 91.0063° E"}</strong></div>
+                <div>CRS Projection: <strong className="text-emerald-600 dark:text-emerald-400">EPSG:4326 (WGS84)</strong></div>
+                <div>Spatial Index: <strong className="text-cyan-600 dark:text-cyan-400">GiST R-Tree</strong></div>
               </div>
             </div>
           </Card>
 
           {/* Quick Filter Legends */}
           <Card className="border-surface-border bg-surface-100 p-4 space-y-2 shadow-xl text-xs font-mono">
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider pb-1 border-b border-surface-border">
+            <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider pb-1 border-b border-surface-border">
               Map Symbology Legend
             </div>
             <div className="space-y-1.5 pt-1 text-[11px]">
-              <div className="flex items-center gap-2 text-slate-300">
-                <span className="w-3 h-3 rounded-full bg-cyan-400/80 border border-cyan-300" />
+              <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                <span className="w-3 h-3 rounded-full bg-cyan-400/80 border border-cyan-500" />
                 <span>Flood Inundation Perimeter</span>
               </div>
-              <div className="flex items-center gap-2 text-slate-300">
-                <span className="w-3 h-3 rounded-full bg-rose-500 border border-white" />
+              <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                <span className="w-3 h-3 rounded-full bg-rose-500 border border-surface-border" />
                 <span>Critical Hospital / Medical</span>
               </div>
-              <div className="flex items-center gap-2 text-slate-300">
-                <span className="w-3 h-3 rounded-full bg-amber-500 border border-white" />
+              <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                <span className="w-3 h-3 rounded-full bg-amber-500 border border-surface-border" />
                 <span>Power Substation / Grid</span>
               </div>
-              <div className="flex items-center gap-2 text-slate-300">
-                <span className="w-3 h-3 rounded-full bg-emerald-500 border border-white" />
+              <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                <span className="w-3 h-3 rounded-full bg-emerald-500 border border-surface-border" />
                 <span>Rescue Fleet (Boats / Ambulance)</span>
               </div>
             </div>

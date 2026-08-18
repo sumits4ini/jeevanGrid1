@@ -18,19 +18,19 @@ export default function ErrorBoundary({ error, reset }: ErrorProps) {
 
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
-      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-500/20 to-red-600/30 border border-rose-500/40 flex items-center justify-center text-rose-400 mb-4 shadow-2xl animate-pulse">
+      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-500/20 to-red-600/30 border border-rose-500/40 flex items-center justify-center text-rose-500 mb-4 shadow-2xl animate-pulse">
         <AlertOctagon className="w-8 h-8" />
       </div>
 
-      <div className="text-xs font-mono text-rose-400 uppercase tracking-widest font-bold">
+      <div className="text-xs font-mono text-rose-600 dark:text-rose-400 uppercase tracking-widest font-bold">
         EOC SYSTEM EXCEPTION INTERCEPTED
       </div>
 
-      <h1 className="text-2xl lg:text-3xl font-bold text-slate-100 dark:text-slate-100 light:text-slate-900 mt-2">
+      <h1 className="text-2xl lg:text-3xl font-bold text-foreground mt-2">
         Operational Viewport Encountered an Issue
       </h1>
 
-      <p className="text-xs text-slate-400 max-w-md mt-2 leading-relaxed">
+      <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mt-2 leading-relaxed">
         {error.message || "An unexpected error occurred while rendering telemetry components. Pre-cached data remains secure."}
       </p>
 

@@ -10,14 +10,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#090d16",
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+        card: {
+          DEFAULT: "var(--card)",
+          foreground: "var(--card-foreground)",
+        },
         surface: {
-          50: "#1e293b",
-          100: "#131b2e",
-          200: "#0f172a",
-          300: "#0b1120",
-          border: "#1e293b",
-          highlight: "#334155",
+          50: "var(--surface-50)",
+          100: "var(--surface-100)",
+          200: "var(--surface-200)",
+          300: "var(--surface-300)",
+          border: "var(--surface-border)",
+          highlight: "var(--surface-50)",
         },
         brand: {
           50: "#ecfeff",
@@ -32,6 +37,11 @@ const config: Config = {
           moderate: "#eab308",
           low: "#10b981",
         },
+      },
+      textColor: {
+        primary: "var(--text-primary)",
+        secondary: "var(--text-secondary)",
+        muted: "var(--text-muted)",
       },
       fontFamily: {
         sans: [

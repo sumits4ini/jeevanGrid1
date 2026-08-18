@@ -8,7 +8,7 @@ interface AppShellProps {
 
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-background text-slate-100 flex">
+    <div className="min-h-screen bg-background text-foreground flex transition-colors duration-150">
       {/* Sidebar Navigation */}
       <Sidebar />
 

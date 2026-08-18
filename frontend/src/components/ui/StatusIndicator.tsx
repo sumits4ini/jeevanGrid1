@@ -9,12 +9,12 @@ export const StatusIndicator: React.FC<{
   className?: string;
 }> = ({ status, label, className }) => {
   const statusConfig: Record<StatusType, { bg: string; text: string; labelDefault: string }> = {
-    healthy: { bg: "bg-emerald-500", text: "text-emerald-400", labelDefault: "Healthy" },
-    ready: { bg: "bg-cyan-400", text: "text-cyan-400", labelDefault: "Ready" },
-    configured: { bg: "bg-blue-400", text: "text-blue-400", labelDefault: "Configured" },
-    degraded: { bg: "bg-amber-400", text: "text-amber-400", labelDefault: "Degraded" },
-    offline: { bg: "bg-slate-500", text: "text-slate-400", labelDefault: "Offline" },
-    critical: { bg: "bg-rose-500", text: "text-rose-400", labelDefault: "Critical" },
+    healthy: { bg: "bg-emerald-500", text: "text-emerald-600 dark:text-emerald-400", labelDefault: "Healthy" },
+    ready: { bg: "bg-cyan-500 dark:bg-cyan-400", text: "text-cyan-600 dark:text-cyan-400", labelDefault: "Ready" },
+    configured: { bg: "bg-blue-500 dark:bg-blue-400", text: "text-blue-600 dark:text-blue-400", labelDefault: "Configured" },
+    degraded: { bg: "bg-amber-500 dark:bg-amber-400", text: "text-amber-600 dark:text-amber-400", labelDefault: "Degraded" },
+    offline: { bg: "bg-slate-400 dark:bg-slate-500", text: "text-slate-600 dark:text-slate-400", labelDefault: "Offline" },
+    critical: { bg: "bg-rose-500", text: "text-rose-600 dark:text-rose-400", labelDefault: "Critical" },
   };
 
   const current = statusConfig[status] || statusConfig.offline;

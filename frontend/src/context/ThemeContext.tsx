@@ -16,6 +16,20 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [theme, setThemeState] = useState<Theme>("dark");
   const [mounted, setMounted] = useState(false);
 
+  const applyTheme = (newTheme: Theme) => {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    if (newTheme === "dark") {
+      root.classList.add("dark");
+      root.classList.remove("light");
+      root.setAttribute("data-theme", "dark");
+    } else {
+      root.classList.add("light");
+      root.classList.remove("dark");
+      root.setAttribute("data-theme", "light");
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
     const savedTheme = localStorage.getItem("jeevangrid-theme") as Theme | null;
@@ -24,26 +38,17 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       applyTheme(savedTheme);
     } else {
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const initialTheme = prefersDark ? "dark" : "dark"; // Default to dark for EOC
+      const initialTheme: Theme = prefersDark ? "dark" : "dark"; // Default to dark for EOC
       setThemeState(initialTheme);
       applyTheme(initialTheme);
     }
   }, []);
 
-  const applyTheme = (newTheme: Theme) => {
-    const root = document.documentElement;
-    if (newTheme === "dark") {
-      root.classList.add("dark");
-      root.classList.remove("light");
-    } else {
-      root.classList.add("light");
-      root.classList.remove("dark");
-    }
-  };
-
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
-    localStorage.setItem("jeevangrid-theme", newTheme);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("jeevangrid-theme", newTheme);
+    }
     applyTheme(newTheme);
   };
 
